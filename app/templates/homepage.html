@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Disaster Preparedness & Response Education System{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Disaster Preparedness & Response Education</h1>
+        <p>Empowering schools and colleges with the knowledge and tools to respond effectively to natural disasters and
+            emergencies.</p>
+        <a href="{{ url_for('auth.register') }}" class="btn">Get Started</a>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2 class="section-title">Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>Interactive Learning</h3>
+                <p>Engaging modules and quizzes to educate students and staff about disaster preparedness.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-vr-cardboard"></i>
+                <h3>Virtual Drills</h3>
+                <p>Practice safety procedures through realistic virtual simulations without real-world risks.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bell"></i>
+                <h3>Real-time Alerts</h3>
+                <p>Receive immediate notifications and guidance during actual emergency situations.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Do's and Don'ts Section -->
+    <section class="guidelines">
+        <h2 class="section-title">Do's & Don'ts During Disasters</h2>
+        <div class="guidelines-grid">
+            <div class="guideline-card">
+                <h3><i class="fas fa-bolt"></i> Earthquake</h3>
+                <ul class="guideline-list">
+                    <li>Drop, Cover, and Hold On</li>
+                    <li>Stay away from windows and heavy furniture</li>
+                    <li>Do not use elevators</li>
+                    <li>If outdoors, move to an open area</li>
+                </ul>
+            </div>
+            <div class="guideline-card">
+                <h3><i class="fas fa-water"></i> Flood</h3>
+                <ul class="guideline-list">
+                    <li>Move to higher ground immediately</li>
+                    <li>Avoid walking through moving water</li>
+                    <li>Do not drive in flooded areas</li>
+                    <li>Evacuate when advised by authorities</li>
+                </ul>
+            </div>
+            <div class="guideline-card">
+                <h3><i class="fas fa-fire"></i> Fire</h3>
+                <ul class="guideline-list">
+                    <li>Get down low and crawl to escape smoke</li>
+                    <li>Feel doors for heat before opening</li>
+                    <li>Use stairs, not elevators</li>
+                    <li>Stop, Drop, and Roll if clothes catch fire</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Contacts Section -->
+    <section class="emergency">
+        <h2 class="section-title">Emergency Contacts</h2>
+        <div class="contacts-grid">
+            <div class="contact-card" onclick="callEmergency('102')">
+                <i class="fas fa-ambulance"></i>
+                <h3>Ambulance</h3>
+                <p>102 / 108</p>
+            </div>
+            <div class="contact-card" onclick="callEmergency('100')">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Police</h3>
+                <p>100</p>
+            </div>
+            <div class="contact-card" onclick="callEmergency('1070')">
+                <i class="fas fa-life-ring"></i>
+                <h3>Disaster Helpline</h3>
+                <p>1070</p>
+            </div>
+            <div class="contact-card" onclick="callEmergency('101')">
+                <i class="fas fa-fire-extinguisher"></i>
+                <h3>Fire Department</h3>
+                <p>101</p>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Function to handle emergency contact clicks
+    function callEmergency(number) {
+        // Redirect to phone app
+        window.location.href = 'tel:' + number;
+
+        // Fallback for desktop browsers
+        setTimeout(function () {
+            alert('Emergency number: ' + number + '\nPlease call this number from your phone.');
+        }, 500);
+    }
+
+    // Simple JavaScript for interactive elements
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.btn');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                // No need for alert as the link will navigate properly
+            });
+        });
+
+        // Simulate loading effect
+        console.log('Disaster Preparedness App Loaded Successfully');
+    });
+</script>
+{% endblock %}
