@@ -11,6 +11,8 @@
 </head>
 
 <body>
+    <div id="overlay"></div>
+
     <header>
         <div class="logo">
             <i class="fas fa-shield-alt"></i>
@@ -32,26 +34,29 @@
                 {% endif %}
                 <li><a href="{{ url_for('auth.logout') }}">Logout ({{ current_user.name }})</a></li>
                 {% else %}
-                <li><a href="{{ url_for('auth.login') }}" {% if request.endpoint=='auth.register' %}class="active" {% endif
-                        %}>Login</a></li>
+                <li><a href="{{ url_for('auth.login') }}" {% if request.endpoint=='auth.register' %}class="active" {%
+                        endif %}>Login</a></li>
                 <li><a href="{{ url_for('auth.register') }}" {% if request.endpoint=='auth.register' %}class="active" {%
                         endif %}>Register</a></li>
                 {% endif %}
             </ul>
         </nav>
+        <button id="sidebarToggle" class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
     </header>
 
     <main>
-    <!-- Flash Messages -->
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div class="flash-container">
+        <div class="flash-container">
             {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
+            <div class="alert alert-{{ category }}">
                 {{ message }}
-                </div>
-            {% endfor %}
             </div>
+            {% endfor %}
+        </div>
         {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}

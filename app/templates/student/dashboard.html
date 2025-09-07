@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - Disaster Preparedness{% endblock %}
+
+{% block styles %}
+<!-- Add any dashboard-specific CSS if needed -->
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://ui-avatars.com/api/?name=Student+User&background=random" alt="User">
+            <div>
+                <h3>Student User</h3>
+                <p>Grade 10</p>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Learning Modules</a></li>
+            <li><a href="#"><i class="fas fa-question-circle"></i> Quiz</a></li>
+            <li><a href="#"><i class="fas fa-gamepad"></i> Mini Games</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> Leaderboard</a></li>
+            <li><a href="#"><i class="fas fa-bullhorn"></i> Report Incident</a></li>
+            <li><a href="#"><i class="fas fa-fire"></i> Drill Participation</a></li>
+            <li><a href="#"><i class="fas fa-phone-alt"></i> Emergency Contacts</a></li>
+            <li><a href="#"><i class="fas fa-robot"></i> AI Chatbot</a></li>
+            <li><a href="#"><i class="fas fa-list-check"></i> Do's & Don'ts</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="dashboard-header">
+            <div class="welcome-message">
+                <h1>Welcome back, Student!</h1>
+                <p>Stay prepared and keep learning about disaster management</p>
+            </div>
+            <div class="quick-actions">
+                <button class="sos-btn">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    SOS Alert
+                </button>
+            </div>
+        </div>
+
+        <!-- Alert Section -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-bell"></i> Latest Alerts</h2>
+                <a href="#">View All</a>
+            </div>
+            <div class="alert-item">
+                <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="alert-content">
+                    <h3>Earthquake Drill Scheduled</h3>
+                    <p>There will be an earthquake drill next Friday at 10:00 AM. Please be prepared.</p>
+                    <small>2 hours ago</small>
+                </div>
+            </div>
+            <div class="alert-item">
+                <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+                <div class="alert-content">
+                    <h3>New Learning Module Available</h3>
+                    <p>Check out the new module on flood safety measures and response techniques.</p>
+                    <small>1 day ago</small>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Learning Modules -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-book"></i> Learning Modules</h2>
+                    <a href="#">View All</a>
+                </div>
+                <ul class="module-list">
+                    <li class="module-item">
+                        <div class="module-icon"><i class="fas fa-file-pdf"></i></div>
+                        <div class="module-details">
+                            <h3>Earthquake Safety Guide</h3>
+                            <p>PDF • 15 pages</p>
+                        </div>
+                        <a href="#" class="module-action"><i class="fas fa-download"></i></a>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-icon"><i class="fas fa-video"></i></div>
+                        <div class="module-details">
+                            <h3>Flood Preparedness</h3>
+                            <p>Video • 10 min</p>
+                        </div>
+                        <a href="#" class="module-action"><i class="fas fa-play"></i></a>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="module-details">
+                            <h3>Case Study: Tsunami 2004</h3>
+                            <p>Report • 20 pages</p>
+                        </div>
+                        <a href="#" class="module-action"><i class="fas fa-download"></i></a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Quiz Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-question-circle"></i> Quiz & Assessment</h2>
+                    <a href="#">View All</a>
+                </div>
+                <div class="quiz-categories">
+                    <div class="quiz-category">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Multiple Choice</h3>
+                        <p>Test your knowledge</p>
+                    </div>
+                    <div class="quiz-category">
+                        <i class="fas fa-times-circle"></i>
+                        <h3>True/False</h3>
+                        <p>Verify facts</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Leaderboard</h2>
+                    <a href="#">View All</a>
+                </div>
+                <ul class="leaderboard-list">
+                    <li class="leaderboard-item">
+                        <div class="rank rank-1">1</div>
+                        <div class="user-info"><h3>Alex Johnson</h3><p>2500 points</p></div>
+                        <div class="score">95%</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="rank rank-2">2</div>
+                        <div class="user-info"><h3>Maria Garcia</h3><p>2400 points</p></div>
+                        <div class="score">92%</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="rank rank-3">3</div>
+                        <div class="user-info"><h3>James Smith</h3><p>2300 points</p></div>
+                        <div class="score">90%</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="rank">4</div>
+                        <div class="user-info"><h3>You</h3><p>2200 points</p></div>
+                        <div class="score">88%</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Mini Games -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-gamepad"></i> Mini Games</h2>
+                    <a href="#">View All</a>
+                </div>
+                <div class="quiz-categories">
+                    <div class="quiz-category" style="background: linear-gradient(135deg, #4cc9f0, #4895ef);">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h3>Map Game</h3>
+                        <p>Evacuation routes</p>
+                    </div>
+                    <div class="quiz-category" style="background: linear-gradient(135deg, #f9c74f, #f8961e);">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <h3>Puzzle</h3>
+                        <p>Safety equipment</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Incident -->
+            <div class="card">
+                <div class="card-header"><h2><i class="fas fa-bullhorn"></i> Report Incident</h2></div>
+                <p style="margin-bottom: 1rem;">Report any emergency situation or safety concern</p>
+                <button class="sos-btn" style="width: 100%; text-align: center; justify-content: center;">
+                    <i class="fas fa-plus"></i> Report Incident
+                </button>
+            </div>
+
+            <!-- Drill Participation -->
+            <div class="card">
+                <div class="card-header"><h2><i class="fas fa-fire"></i> Drill Participation</h2></div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <div style="flex: 1; text-align: center; padding: 1rem; background-color: rgba(67, 97, 238, 0.1); border-radius: 8px;">
+                        <i class="fas fa-desktop" style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;"></i>
+                        <h3>Virtual Drill</h3>
+                        <p>Online practice</p>
+                    </div>
+                    <div style="flex: 1; text-align: center; padding: 1rem; background-color: rgba(67, 97, 238, 0.1); border-radius: 8px;">
+                        <i class="fas fa-running" style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;"></i>
+                        <h3>Physical Drill</h3>
+                        <p>In-person practice</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Sidebar toggle for mobile
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const overlay = document.getElementById('overlay');
+
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', function () {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
+
+    // SOS button functionality
+    const sosBtn = document.querySelector('.sos-btn');
+    if (sosBtn) {
+        sosBtn.addEventListener('click', function () {
+            if (confirm('Are you sure you want to send an SOS alert? This will notify emergency contacts and authorities.')) {
+                alert('SOS alert sent! Help is on the way.');
+            }
+        });
+    }
+
+    // Quiz category selection
+    const quizCategories = document.querySelectorAll('.quiz-category');
+    quizCategories.forEach(category => {
+        category.addEventListener('click', function () {
+            alert('Starting quiz: ' + this.querySelector('h3').textContent);
+        });
+    });
+</script>
+{% endblock %}
