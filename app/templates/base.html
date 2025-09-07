@@ -18,8 +18,7 @@
         </div>
         <nav>
             <ul>
-                <li><a href="{{ url_for('main.home') }}" {% if request.endpoint=='main.home' %}class="active" {% endif
-                        %}>Home</a></li>
+                <li><a href="{{ url_for('main.home') }}">Home</a></li>
                 <li><a href="{{ url_for('main.about') }}" {% if request.endpoint=='main.about' %}class="active" {% endif
                         %}>About</a></li>
 
@@ -33,7 +32,7 @@
                 {% endif %}
                 <li><a href="{{ url_for('auth.logout') }}">Logout ({{ current_user.name }})</a></li>
                 {% else %}
-                <li><a href="{{ url_for('auth.login') }}" {% if request.endpoint=='auth.login' %}class="active" {% endif
+                <li><a href="{{ url_for('auth.login') }}" {% if request.endpoint=='auth.register' %}class="active" {% endif
                         %}>Login</a></li>
                 <li><a href="{{ url_for('auth.register') }}" {% if request.endpoint=='auth.register' %}class="active" {%
                         endif %}>Register</a></li>
@@ -43,9 +42,20 @@
     </header>
 
     <main>
+    <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </main>
-
 
     <footer>
         <div class="footer-content">

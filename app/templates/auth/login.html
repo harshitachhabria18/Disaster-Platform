@@ -12,34 +12,33 @@
         
         <div class="login-form">
             <form method="POST" action="{{ url_for('auth.login') }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {{ form.hidden_tag() }}
                 
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                    {{ form.email.label }}
+                    {{ form.email(class="form-control", placeholder="Enter your email") }}
+                    {% for error in form.email.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
                 </div>
                 
                 <div class="form-group">
-                    <label for="role">Role</label>
-                    <select id="role" name="role" class="form-control" required>
-                        <option value="">Select your role</option>
-                        <option value="student">Student</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="admin">Administrator</option>
-                    </select>
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control", placeholder="Enter your password") }}
+                    {% for error in form.password.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
                 </div>
                 
-                <div class="form-group" id="instituteField">
-                    <label for="institute_id">Institute ID</label>
-                    <input type="text" id="institute_id" name="institute_id" class="form-control" placeholder="Enter your institute ID">
+                <div class="form-group">
+                    {{ form.role.label }}
+                    {{ form.role(class="form-control") }}
+                    {% for error in form.role.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
                 </div>
                 
-                <button type="submit" class="btn-login">Sign In</button>
+                <button type="submit" class="btn-login">{{ form.submit.label.text }}</button>
             </form>
             
             <div class="login-links">

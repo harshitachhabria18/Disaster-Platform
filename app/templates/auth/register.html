@@ -12,54 +12,98 @@
         
         <div class="registration-form">
             <form method="POST" action="{{ url_for('auth.register') }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {{ form.hidden_tag() }}
                 
+                <!-- Role -->
                 <div class="form-group">
-                    <label for="role">Role *</label>
-                    <select id="role" name="role" class="form-control" required>
-                        <option value="">Select your role</option>
-                        <option value="student">Student</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="admin">Administrator</option>
-                    </select>
+                    {{ form.role.label(class="form-label") }}
+                    {{ form.role(class="form-control", id="role") }}
+                    {% for error in form.role.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
                 </div>
                 
+                <!-- First & Last Name -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="first_name">First Name *</label>
-                        <input type="text" id="first_name" name="first_name" class="form-control" placeholder="Enter your first name" required>
+                        {{ form.first_name.label(class="form-label") }}
+                        {{ form.first_name(class="form-control") }}
+                        {% for error in form.first_name.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
                     </div>
                     
                     <div class="form-group">
-                        <label for="last_name">Last Name *</label>
-                        <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Enter your last name" required>
+                        {{ form.last_name.label(class="form-label") }}
+                        {{ form.last_name(class="form-control") }}
+                        {% for error in form.last_name.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
                     </div>
                 </div>
                 
+                <!-- Email -->
                 <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control") }}
+                    {% for error in form.email.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
                 </div>
                 
-                <div class="form-group" id="instituteField">
-                    <label for="institute_id" id="instituteLabel">Institute ID *</label>
-                    <input type="text" id="institute_id" name="institute_id" class="form-control" placeholder="Enter your institute ID" required>
+
+                <!-- Student: Institute ID -->
+                <div class="form-group role-field" id="studentField" style="display:none;">
+                    <label for="institute_id">Institute ID *</label>
+                    {{ form.institute_id(class="form-control", id="institute_id") }}
+                    {% for error in form.institute_id.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <!-- Teacher: Institute Code -->
+                <div class="form-group role-field" id="teacherField" style="display:none;">
+                    <label for="teacher_code">Institute Code *</label>
+                    {{ form.teacher_code(class="form-control", id="teacher_code") }}
+                    {% for error in form.teacher_code.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <!-- Administrator: Admin ID -->
+                <div class="form-group role-field" id="adminField" style="display:none;">
+                    <label for="admin_id">Administrator ID *</label>
+                    {{ form.admin_id(class="form-control", id="admin_id") }}
+                    {% for error in form.admin_id.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
                 </div>
                 
+                <!-- Phone -->
                 <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" class="form-control" placeholder="Enter your phone number">
+                    {{ form.phone.label(class="form-label") }}
+                    {{ form.phone(class="form-control") }}
+                    {% for error in form.phone.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
                 </div>
                 
+                 <!-- Password & Confirm -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="password">Password *</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Create a password" required>
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control") }}
+                        {% for error in form.password.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
                     </div>
                     
                     <div class="form-group">
-                        <label for="confirm_password">Confirm Password *</label>
-                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm your password" required>
+                        {{ form.confirm_password.label(class="form-label") }}
+                        {{ form.confirm_password(class="form-control") }}
+                        {% for error in form.confirm_password.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
                     </div>
                 </div>
                 
@@ -74,12 +118,16 @@
                     </ul>
                 </div>
                 
+                <!-- Terms -->
                 <div class="terms-check">
-                    <input type="checkbox" id="terms" name="terms" required>
-                    <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                    {{ form.terms() }}
+                    {{ form.terms.label }}
+                    {% for error in form.terms.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
                 </div>
                 
-                <button type="submit" class="btn-register">Create Account</button>
+                <button type="submit" class="btn-register">{{ form.submit.label.text }}</button>
             </form>
             
             <div class="registration-links">
@@ -94,84 +142,39 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const roleSelect = document.getElementById('role');
-        const instituteField = document.getElementById('instituteField');
-        const instituteLabel = document.getElementById('instituteLabel');
-        const instituteInput = document.getElementById('institute_id');
-        
-        // Role selection handler
-        roleSelect.addEventListener('change', function() {
-            const role = this.value;
-            updateFormForRole(role);
-        });
-        
-        // Update form based on selected role
+        const studentField = document.getElementById('studentField');
+        const teacherField = document.getElementById('teacherField');
+        const adminField = document.getElementById('adminField');
+
+        const studentInput = document.getElementById('institute_id');
+        const teacherInput = document.getElementById('teacher_code');
+        const adminInput = document.getElementById('admin_id');
+
         function updateFormForRole(role) {
+            document.querySelectorAll('.role-field').forEach(f => f.style.display = 'none');
+
+            studentInput.required = false;
+            teacherInput.required = false;
+            adminInput.required = false;
+
             if (role === 'student') {
-                instituteField.style.display = 'block';
-                instituteLabel.textContent = 'Institute ID *';
-                instituteInput.placeholder = 'Enter your institute ID';
-                instituteInput.required = true;
+                studentField.style.display = 'block';
+                studentInput.required = true;
             } else if (role === 'teacher') {
-                instituteField.style.display = 'block';
-                instituteLabel.textContent = 'Institute Code *';
-                instituteInput.placeholder = 'Enter your institute ID';
-                instituteInput.required = true;
+                teacherField.style.display = 'block';
+                teacherInput.required = true;
             } else if (role === 'admin') {
-                instituteField.style.display = 'block';
-                instituteLabel.textContent = 'Administrator ID *';
-                instituteInput.placeholder = 'Enter your institute code';
-                instituteInput.required = true;
-            } else {
-                instituteField.style.display = 'none';
-                instituteInput.required = false;
+                adminField.style.display = 'block';
+                adminInput.required = true;
             }
         }
-        
-        // Form validation
-        const form = document.querySelector('form');
-        form.addEventListener('submit', function(e) {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            const role = document.getElementById('role').value;
-            const instituteId = document.getElementById('institute_id').value;
-            
-            // Password validation
-            if (!validatePassword(password)) {
-                e.preventDefault();
-                alert('Password does not meet the requirements. Please check the password guidelines.');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                alert('Passwords do not match');
-                return;
-            }
-            
-            // Institute ID validation for specific roles
-            if ((role === 'student' || role === 'teacher') && !instituteId) {
-                e.preventDefault();
-                alert('Please enter your institute ID');
-                return;
-            }
+
+        // On role change
+        roleSelect.addEventListener('change', function() {
+            updateFormForRole(this.value);
         });
-        
-        // Password validation function
-        function validatePassword(password) {
-            const minLength = 8;
-            const hasUpperCase = /[A-Z]/.test(password);
-            const hasLowerCase = /[a-z]/.test(password);
-            const hasNumbers = /\d/.test(password);
-            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-            
-            return password.length >= minLength && 
-                   hasUpperCase && 
-                   hasLowerCase && 
-                   hasNumbers && 
-                   hasSpecialChar;
-        }
-        
-        // Initialize form
+
+        // Initialize on page load
         updateFormForRole(roleSelect.value);
     });
 </script>

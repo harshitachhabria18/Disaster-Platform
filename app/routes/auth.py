@@ -1,35 +1,53 @@
-# app/routes/auth.py
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from app.models import User, Institute
-
+from app.forms import RegisterForm, LoginForm
+from werkzeug.security import generate_password_hash, check_password_hash
 bp = Blueprint('auth', __name__)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        flash("You are already logged in.", "info")
         return redirect(url_for('main.home'))
     
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        role = request.form.get('role')
-        institute_id = request.form.get('institute_id')
-        
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        role = form.role.data
+
         user = User.query.filter_by(email=email).first()
         
-        if user and user.check_password(password) and user.role == role:
-            if user.role in ['student', 'teacher'] and str(user.institute_id) != institute_id:
-                flash('Invalid institute ID', 'error')
-                return render_template('auth/login.html')
-            
+        if user and check_password_hash(user.password_hash, password) and user.role == role:
+            # Student: validate institute
+            if user.role == 'student' and user.institute_id:
+                institute = Institute.query.get(user.institute_id)
+                if not institute:
+                    flash('Your registered institute does not exist. Contact admin.', 'error')
+                    return redirect(url_for('auth.login'))
+                
+            if user.role == 'teacher' and user.teacher_code:
+                institute = Institute.query.get(user.teacher_code)  
+                if not institute:
+                    flash('Invalid teacher code. Contact admin.', 'error')
+                    return redirect(url_for('auth.login'))
+                
             login_user(user)
-            flash('Login successful!', 'success')
-            
+
+            # Flash message
+            if user.role == 'student' and user.institute_id:
+                flash(f"Welcome {user.first_name} from {institute.name}!", "success")
+            elif user.role == 'teacher':
+                flash(f"Welcome {user.first_name}, from {institute.name}!", "success")
+            else:
+                flash("Login successful!", "success")
+
             # Redirect based on role
             if user.role == 'student':
-                return redirect(url_for('student.dashboard'))
+                return redirect(url_for('main.home'))
             elif user.role == 'teacher':
                 return redirect(url_for('teacher.dashboard'))
             elif user.role == 'admin':
@@ -39,44 +57,71 @@ def login():
         else:
             flash('Login failed. Check your credentials.', 'error')
     
-    return render_template('auth/login.html')
+    return render_template('auth/login.html', form=form)
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     
-    if request.method == 'POST':
-        # Process registration form
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
         name = f"{first_name} {last_name}"
-        email = request.form.get('email')
-        password = request.form.get('password')
-        role = request.form.get('role')
-        institute_id = request.form.get('institute_id')
-        phone = request.form.get('phone')
+        email = form.email.data
+        phone = form.phone.data
+        # password = form.password.data
+        hashed_password = generate_password_hash(form.password.data)
+        role = form.role.data
+
+         # Initialize all role-specific fields as None
+        admin_id = None
+        institute_id = None
+        teacher_code = None
+
+        # Role-specific validation
+        if role == 'student':
+            try:
+                institute_id = int(form.institute_id.data)
+            except (ValueError, TypeError):
+                flash('Invalid Institute ID', 'error')
+                return render_template('auth/register.html', form=form)
+            
+            institute = Institute.query.get(institute_id)
+            if not institute:
+                flash('Selected institute does not exist. Please choose a valid one.', 'error')
+                return render_template('auth/register.html', form=form)
+
+        elif role == 'teacher':
+            teacher_code = form.teacher_code.data
+            # Validate teacher code exists as an institute_id
+            institute = Institute.query.get(teacher_code)
+            if not institute:
+                flash('Invalid teacher code. Please use a valid institute ID.', 'error')
+                return render_template('auth/register.html', form=form)
+
+        elif role == 'admin':
+            admin_id = form.admin_id.data
         
         # Check if user already exists
         if User.query.filter_by(email=email).first():
             flash('Email already registered', 'error')
-            return render_template('auth/register.html')
-        
-        # Check if institute exists for student/teacher roles
-        if role in ['student', 'teacher']:
-            institute = Institute.query.get(institute_id)
-            if not institute:
-                flash('Invalid institute ID', 'error')
-                return render_template('auth/register.html')
+            return render_template('auth/register.html', form=form)
         
         # Create new user
         user = User(
-            name=name,
+            first_name=first_name,
+            last_name = last_name,
             email=email,
+            phone=phone,
             role=role,
-            institute_id=institute_id if role in ['student', 'teacher'] else None
+            admin_id=admin_id,
+            institute_id=institute_id,
+            teacher_code=teacher_code,
+            password_hash=hashed_password
         )
-        user.set_password(password)
         
         db.session.add(user)
         db.session.commit()
@@ -84,7 +129,7 @@ def register():
         flash('Registration successful! Please login.', 'success')
         return redirect(url_for('auth.login'))
     
-    return render_template('auth/register.html')
+    return render_template('auth/register.html', form=form)
 
 @bp.route('/logout')
 @login_required
