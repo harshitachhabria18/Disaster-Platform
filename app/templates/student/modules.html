@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Learning Modules - DisasterReady{% endblock %}
+
+{% block styles %}
+<!-- You can add page-specific styles here if needed -->
+{% endblock %}
+
+{% block content %}
+<div class="modules-container">
+    <!-- Modules Header -->
+    <div class="modules-header">
+        <h1>Learning Resources</h1>
+        <p>Access educational materials to enhance your disaster preparedness knowledge</p>
+    </div>
+
+    <!-- Modules Content -->
+    <div class="modules-content">
+        <div class="resources-grid">
+            <!-- PDFs Section -->
+            <div class="resource-section">
+                <div class="section-header">
+                    <i class="fas fa-file-pdf"></i>
+                    <h2>PDF Guides & Instructions</h2>
+                </div>
+                <div class="resources-list">
+                    <div class="resource-card" onclick="openResource('Earthquake Safety Guide', 'pdf')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>Earthquake Safety Guide</h3>
+                        <p>Complete guide to preparing for and responding to earthquakes</p>
+                        <div class="resource-meta">
+                            <span>15 pages</span>
+                            <span>2.4 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <div class="resource-card" onclick="openResource('Flood Preparedness Manual', 'pdf')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>Flood Preparedness Manual</h3>
+                        <p>How to prepare for flooding emergencies and evacuation procedures</p>
+                        <div class="resource-meta">
+                            <span>12 pages</span>
+                            <span>1.8 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <div class="resource-card" onclick="openResource('First Aid Basics', 'pdf')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>First Aid Basics</h3>
+                        <p>Essential first aid procedures for emergency situations</p>
+                        <div class="resource-meta">
+                            <span>8 pages</span>
+                            <span>1.2 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Videos Section -->
+            <div class="resource-section">
+                <div class="section-header">
+                    <i class="fas fa-video"></i>
+                    <h2>Instructional Videos</h2>
+                </div>
+                <div class="resources-list">
+                    <div class="resource-card" onclick="openResource('Earthquake Safety Procedures', 'video')">
+                        <div class="resource-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>Earthquake Safety Procedures</h3>
+                        <p>Step-by-step video guide on what to do during an earthquake</p>
+                        <div class="resource-meta">
+                            <span>10:25 min</span>
+                            <span>HD</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <div class="resource-card" onclick="openResource('Fire Evacuation Drill', 'video')">
+                        <div class="resource-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>Fire Evacuation Drill</h3>
+                        <p>Proper techniques for evacuating during a fire emergency</p>
+                        <div class="resource-meta">
+                            <span>7:45 min</span>
+                            <span>HD</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <div class="resource-card" onclick="openResource('Emergency Kit Preparation', 'video')">
+                        <div class="resource-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>Emergency Kit Preparation</h3>
+                        <p>How to assemble a comprehensive emergency preparedness kit</p>
+                        <div class="resource-meta">
+                            <span>12:10 min</span>
+                            <span>HD</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div class="resource-section">
+                <div class="section-header">
+                    <i class="fas fa-file-alt"></i>
+                    <h2>Reports & Case Studies</h2>
+                </div>
+                <div class="resources-list">
+                    <div class="resource-card" onclick="openResource('Tsunami 2004 Analysis', 'report')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Tsunami 2004 Analysis</h3>
+                        <p>Comprehensive analysis of the 2004 Indian Ocean tsunami</p>
+                        <div class="resource-meta">
+                            <span>24 pages</span>
+                            <span>3.1 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <div class="resource-card" onclick="openResource('Hurricane Katrina Report', 'report')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Hurricane Katrina Report</h3>
+                        <p>Lessons learned from the Hurricane Katrina disaster response</p>
+                        <div class="resource-meta">
+                            <span>18 pages</span>
+                            <span>2.7 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <div class="resource-card" onclick="openResource('Earthquake Resilience Study', 'report')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Earthquake Resilience Study</h3>
+                        <p>Research on building community resilience to earthquakes</p>
+                        <div class="resource-meta">
+                            <span>32 pages</span>
+                            <span>4.2 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="modules-sidebar">
+            <div class="sidebar-card">
+                <h3><i class="fas fa-book"></i> Related Modules</h3>
+                <div class="related-modules-list">
+                    <div class="related-module">
+                        <div class="related-module-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div>
+                            <h4>Emergency Evacuation Plans</h4>
+                            <p>8 pages • Beginner</p>
+                        </div>
+                    </div>
+                    
+                    <div class="related-module">
+                        <div class="related-module-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div>
+                            <h4>First Aid Demonstration</h4>
+                            <p>Video • 15 min</p>
+                        </div>
+                    </div>
+                    
+                    <div class="related-module">
+                        <div class="related-module-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div>
+                            <h4>Disaster Psychology</h4>
+                            <p>Report • 14 pages</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3><i class="fas fa-robot"></i> AI Summarizer</h3>
+                <div class="ai-summarizer">
+                    <p>Generate a summary of any resource using AI</p>
+                    <textarea placeholder="Paste text or enter topic you want summarized..."></textarea>
+                    <button>
+                        <i class="fas fa-magic"></i> Generate Summary
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3><i class="fas fa-download"></i> Download All Resources</h3>
+                <p>Download a zip file containing all learning materials</p>
+                <button class="btn" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-file-archive"></i> Download All
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resource Modal -->
+<div class="modal" id="resourceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Resource Title</h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openResource(title, type) {
+        const modal = document.getElementById('resourceModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        
+        modalTitle.textContent = title;
+        modalBody.innerHTML = '';
+
+        if (type === 'pdf') {
+            modalBody.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 4rem; color: #e74c3c; margin-bottom: 1rem;">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3>${title}</h3>
+                    <p>This would open the PDF in a viewer or download it in a real application</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                        <button class="btn"><i class="fas fa-eye"></i> View PDF</button>
+                        <button class="btn"><i class="fas fa-download"></i> Download</button>
+                    </div>
+                </div>`;
+        } else if (type === 'video') {
+            modalBody.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px;">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                                style="position: absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+                                allowfullscreen></iframe>
+                    </div>
+                    <h3 style="margin-top: 1rem;">${title}</h3>
+                    <p>Educational video on disaster preparedness</p>
+                </div>`;
+        } else if (type === 'report') {
+            modalBody.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 4rem; color: #2ecc71; margin-bottom: 1rem;">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>${title}</h3>
+                    <p>This would display the report content in a real application</p>
+                </div>`;
+        }
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('resourceModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('resourceModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}

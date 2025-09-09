@@ -32,7 +32,7 @@
                 {% elif current_user.role == 'admin' %}
                 <li><a href="{{ url_for('govt.dashboard') }}">Dashboard</a></li>
                 {% endif %}
-                <li><a href="{{ url_for('auth.logout') }}">Logout ({{ current_user.name }})</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                 {% else %}
                 <li><a href="{{ url_for('auth.login') }}" {% if request.endpoint=='auth.register' %}class="active" {%
                         endif %}>Login</a></li>

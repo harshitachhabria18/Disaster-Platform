@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Report Incident - DisasterReady{% endblock %}
+
+{% block styles %}
+<!-- Add any page-specific CSS here -->
+{% endblock %}
+
+{% block content %}
+<div class="incident-container">
+    <!-- Incident Header -->
+    <div class="incident-header">
+        <h1>Report an Incident</h1>
+        <p>Use this form to report emergencies or safety concerns. Your report will be sent to authorities and designated teachers.</p>
+    </div>
+    
+    <!-- Incident Form -->
+    <form class="incident-form">
+        <!-- Incident Details -->
+        <div class="form-section">
+            <div class="form-section-header">
+                <i class="fas fa-info-circle"></i>
+                <h2>Incident Details</h2>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="incident-type">Incident Type *</label>
+                    <select class="form-control" id="incident-type" required>
+                        <option value="">Select incident type</option>
+                        <option value="earthquake">Earthquake</option>
+                        <option value="fire">Fire</option>
+                        <option value="flood">Flood</option>
+                        <option value="medical">Medical Emergency</option>
+                        <option value="hazard">Safety Hazard</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="severity">Severity Level *</label>
+                    <select class="form-control" id="severity" required>
+                        <option value="">Select severity level</option>
+                        <option value="low">Low - No immediate danger</option>
+                        <option value="medium">Medium - Potential danger</option>
+                        <option value="high">High - Dangerous situation</option>
+                        <option value="critical">Critical - Life-threatening</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Incident Description *</label>
+                <textarea class="form-control" id="description" placeholder="Please describe what happened, when it happened, and any other important details..." required></textarea>
+            </div>
+        </div>
+        
+        <!-- Media Upload -->
+        <div class="form-section">
+            <div class="form-section-header">
+                <i class="fas fa-camera"></i>
+                <h2>Upload Media Evidence</h2>
+            </div>
+            
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Click to upload photos or videos</p>
+                <span>Supports JPG, PNG, MP4 files (max 25MB each)</span>
+                <input type="file" id="fileUpload" multiple style="display: none;" accept="image/*,video/*">
+            </div>
+            
+            <div class="upload-preview" id="uploadPreview">
+                <!-- Uploaded files will appear here -->
+            </div>
+        </div>
+        
+        <!-- Location -->
+        <div class="form-section">
+            <div class="form-section-header">
+                <i class="fas fa-map-marker-alt"></i>
+                <h2>Incident Location</h2>
+            </div>
+            
+            <div class="location-section">
+                <div class="location-map" id="locationMap">
+                    <i class="fas fa-map-marked-alt" style="font-size: 3rem; margin-right: 1rem;"></i>
+                    <span>Click "Get My Location" to add precise coordinates</span>
+                </div>
+                
+                <div class="location-actions">
+                    <button type="button" class="primary" id="getLocationBtn">
+                        <i class="fas fa-location-arrow"></i> Get My Location
+                    </button>
+                    <button type="button" id="selectOnMapBtn">
+                        <i class="fas fa-map"></i> Select on Map
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <label for="location-notes">Location Notes</label>
+                <input type="text" class="form-control" id="location-notes" placeholder="E.g., Near science building, second floor, room 203">
+            </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="button" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i> Submit Report
+            </button>
+        </div>
+    </form>
+    
+    <!-- Emergency Contacts -->
+    <div class="emergency-contacts">
+        <h2>Emergency Contacts</h2>
+        <div class="contacts-grid">
+            <div class="contact-card">
+                <i class="fas fa-phone-alt"></i>
+                <h3>Local Emergency</h3>
+                <p>911</p>
+                <a href="tel:911">Call Now</a>
+            </div>
+            
+            <div class="contact-card">
+                <i class="fas fa-first-aid"></i>
+                <h3>Campus Security</h3>
+                <p>(555) 123-4567</p>
+                <a href="tel:5551234567">Call Now</a>
+            </div>
+            
+            <div class="contact-card">
+                <i class="fas fa-hospital"></i>
+                <h3>Medical Emergency</h3>
+                <p>(555) 867-5309</p>
+                <a href="tel:5558675309">Call Now</a>
+            </div>
+            
+            <div class="contact-card">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Disaster Hotline</h3>
+                <p>1-800-123-4567</p>
+                <a href="tel:18001234567">Call Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // File upload functionality
+    const uploadArea = document.getElementById('uploadArea');
+    const fileUpload = document.getElementById('fileUpload');
+    const uploadPreview = document.getElementById('uploadPreview');
+    
+    uploadArea.addEventListener('click', () => {
+        fileUpload.click();
+    });
+    
+    fileUpload.addEventListener('change', (e) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const url = e.target.result;
+                const item = document.createElement('div');
+                item.className = 'upload-item';
+                
+                if (file.type.startsWith('image/')) {
+                    item.innerHTML = `
+                        <img src="${url}" alt="Uploaded image">
+                        <button type="button" class="remove-upload">&times;</button>
+                    `;
+                } else if (file.type.startsWith('video/')) {
+                    item.innerHTML = `
+                        <video controls>
+                            <source src="${url}" type="${file.type}">
+                        </video>
+                        <button type="button" class="remove-upload">&times;</button>
+                    `;
+                }
+                
+                // Add remove functionality
+                const removeBtn = item.querySelector('.remove-upload');
+                removeBtn.addEventListener('click', () => {
+                    item.remove();
+                });
+                
+                uploadPreview.appendChild(item);
+            };
+            
+            reader.readAsDataURL(file);
+        });
+        
+        // Reset the file input
+        fileUpload.value = '';
+    });
+    
+    // Location functionality
+    const getLocationBtn = document.getElementById('getLocationBtn');
+    const locationMap = document.getElementById('locationMap');
+    
+    getLocationBtn.addEventListener('click', () => {
+        getLocationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Locating...';
+        
+        // Simulate location detection
+        setTimeout(() => {
+            getLocationBtn.innerHTML = '<i class="fas fa-location-arrow"></i> Get My Location';
+            locationMap.innerHTML = `
+                <i class="fas fa-check-circle" style="color: #2ecc71; font-size: 2rem; margin-right: 1rem;"></i>
+                <span>Location found: 34.0522° N, 118.2437° W (Los Angeles, CA)</span>
+            `;
+            
+            // Show success message
+            alert('Your location has been captured successfully!');
+        }, 1500);
+    });
+    
+    // Select on map functionality
+    const selectOnMapBtn = document.getElementById('selectOnMapBtn');
+    
+    selectOnMapBtn.addEventListener('click', () => {
+        alert('In a real application, this would open an interactive map for precise location selection.');
+    });
+    
+    // Form submission
+    const incidentForm = document.querySelector('.incident-form');
+    
+    incidentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Validate form
+        const incidentType = document.getElementById('incident-type');
+        const severity = document.getElementById('severity');
+        const description = document.getElementById('description');
+        
+        if (!incidentType.value || !severity.value || !description.value) {
+            alert('Please fill in all required fields marked with *');
+            return;
+        }
+        
+        // Simulate form submission
+        const submitBtn = document.querySelector('.btn-submit');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        submitBtn.disabled = true;
+        
+        setTimeout(() => {
+            alert('Incident reported successfully! Authorities and selected teachers have been notified.');
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Report';
+            submitBtn.disabled = false;
+            incidentForm.reset();
+            uploadPreview.innerHTML = '';
+            locationMap.innerHTML = `
+                <i class="fas fa-map-marked-alt" style="font-size: 3rem; margin-right: 1rem;"></i>
+                <span>Click "Get My Location" to add precise coordinates</span>
+            `;
+        }, 2000);
+    });
+</script>
+{% endblock %}

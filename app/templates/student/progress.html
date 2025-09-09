@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - DisasterReady</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../static/css/style.css">
+    <style>
+        /* Leaderboard Specific Styles */
+        .leaderboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .leaderboard-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .leaderboard-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .leaderboard-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .leaderboard-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 992px) {
+            .leaderboard-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .leaderboard-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .section-header h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-left: 0.8rem;
+        }
+        
+        .section-header i {
+            color: var(--primary);
+            font-size: 1.3rem;
+            background-color: rgba(27, 60, 83, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Ranking List */
+        .ranking-list {
+            list-style: none;
+        }
+        
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .ranking-item:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .ranking-item.user-rank {
+            background-color: rgba(67, 97, 238, 0.1);
+            border: 1px solid var(--secondary);
+        }
+        
+        .rank-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .rank-1 {
+            background-color: gold;
+            color: #333;
+        }
+        
+        .rank-2 {
+            background-color: silver;
+            color: #333;
+        }
+        
+        .rank-3 {
+            background-color: #cd7f32; /* Bronze */
+            color: white;
+        }
+        
+        .rank-other {
+            background-color: #f0f0f0;
+            color: #666;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+            color: var(--primary);
+        }
+        
+        .user-info p {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .user-score {
+            font-weight: bold;
+            color: var(--primary);
+            margin-left: 1rem;
+            flex-shrink: 0;
+        }
+        
+        /* Badges Section */
+        .badges-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .badge {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .badge.earned i {
+            color: #f9c74f; /* Gold for earned badges */
+        }
+        
+        .badge.locked i {
+            color: #ccc; /* Gray for locked badges */
+        }
+        
+        .badge h4 {
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+        
+        .badge p {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .badge.locked {
+            opacity: 0.7;
+        }
+        
+        .lock-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: #999;
+        }
+        
+        /* Filters and Timeframes */
+        .leaderboard-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .filter-btn:hover:not(.active) {
+            border-color: var(--secondary);
+        }
+        
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Category Section */
+        .category-stats {
+            margin-top: 1.5rem;
+        }
+        
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .category-item:last-child {
+            border-bottom: none;
+        }
+        
+        .category-name {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .category-score {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .leaderboard-container {
+                padding: 1rem;
+            }
+            
+            .badges-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .leaderboard-filters {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header/Navbar -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <span>DisasterReady</span>
+        </div>
+        
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#" class="active">Leaderboard</a></li>
+                <li><a href="#">Logout (Student User)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="leaderboard-container">
+            <!-- Leaderboard Header -->
+            <div class="leaderboard-header">
+                <h1>Leaderboard & Achievements</h1>
+                <p>Track your progress, compete with peers, and earn badges for your disaster preparedness skills</p>
+            </div>
+            
+            <!-- Leaderboard Content -->
+            <div class="leaderboard-content">
+                <!-- Left Column -->
+                <div>
+                    <!-- Global Ranking -->
+                    <div class="leaderboard-section">
+                        <div class="section-header">
+                            <i class="fas fa-trophy"></i>
+                            <h2>Global Ranking</h2>
+                        </div>
+                        
+                        <div class="leaderboard-filters">
+                            <button class="filter-btn active">All Time</button>
+                            <button class="filter-btn">Monthly</button>
+                            <button class="filter-btn">Weekly</button>
+                        </div>
+                        
+                        <ul class="ranking-list">
+                            <li class="ranking-item">
+                                <div class="rank-number rank-1">1</div>
+                                <div class="user-avatar">
+                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User">
+                                </div>
+                                <div class="user-info">
+                                    <h3>Alex Johnson</h3>
+                                    <p>Grade 11 • Science Major</p>
+                                </div>
+                                <div class="user-score">2,540 pts</div>
+                            </li>
+                            
+                            <li class="ranking-item">
+                                <div class="rank-number rank-2">2</div>
+                                <div class="user-avatar">
+                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User">
+                                </div>
+                                <div class="user-info">
+                                    <h3>Maria Garcia</h3>
+                                    <p>Grade 10 • Math Major</p>
+                                </div>
+                                <div class="user-score">2,420 pts</div>
+                            </li>
+                            
+                            <li class="ranking-item">
+                                <div class="rank-number rank-3">3</div>
+                                <div class="user-avatar">
+                                    <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="User">
+                                </div>
+                                <div class="user-info">
+                                    <h3>James Smith</h3>
+                                    <p>Grade 12 • History Major</p>
+                                </div>
+                                <div class="user-score">2,380 pts</div>
+                            </li>
+                            
+                            <li class="ranking-item">
+                                <div class="rank-number rank-other">4</div>
+                                <div class="user-avatar">
+                                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User">
+                                </div>
+                                <div class="user-info">
+                                    <h3>Sarah Williams</h3>
+                                    <p>Grade 11 • Arts Major</p>
+                                </div>
+                                <div class="user-score">2,250 pts</div>
+                            </li>
+                            
+                            <li class="ranking-item">
+                                <div class="rank-number rank-other">5</div>
+                                <div class="user-avatar">
+                                    <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="User">
+                                </div>
+                                <div class="user-info">
+                                    <h3>David Chen</h3>
+                                    <p>Grade 10 • Science Major</p>
+                                </div>
+                                <div class="user-score">2,180 pts</div>
+                            </li>
+                            
+                            <li class="ranking-item user-rank">
+                                <div class="rank-number rank-other">8</div>
+                                <div class="user-avatar">
+                                    <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="You">
+                                </div>
+                                <div class="user-info">
+                                    <h3>You</h3>
+                                    <p>Grade 10 • General Studies</p>
+                                </div>
+                                <div class="user-score">2,020 pts</div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Category Performance -->
+                    <div class="leaderboard-section" style="margin-top: 2rem;">
+                        <div class="section-header">
+                            <i class="fas fa-chart-pie"></i>
+                            <h2>Your Category Performance</h2>
+                        </div>
+                        
+                        <div class="category-stats">
+                            <div class="category-item">
+                                <span class="category-name">Earthquake Safety</span>
+                                <span class="category-score">92%</span>
+                            </div>
+                            
+                            <div class="category-item">
+                                <span class="category-name">Fire Safety</span>
+                                <span class="category-score">85%</span>
+                            </div>
+                            
+                            <div class="category-item">
+                                <span class="category-name">First Aid</span>
+                                <span class="category-score">78%</span>
+                            </div>
+                            
+                            <div class="category-item">
+                                <span class="category-name">Flood Preparedness</span>
+                                <span class="category-score">88%</span>
+                            </div>
+                            
+                            <div class="category-item">
+                                <span class="category-name">Evacuation Procedures</span>
+                                <span class="category-score">82%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div>
+                    <!-- Your Progress -->
+                    <div class="leaderboard-section">
+                        <div class="section-header">
+                            <i class="fas fa-user"></i>
+                            <h2>Your Progress</h2>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">12</div>
+                                <div class="stat-label">Drills Completed</div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-number">8</div>
+                                <div class="stat-label">Modules Mastered</div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-number">22</div>
+                                <div class="stat-label">Quizzes Taken</div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-number">15</div>
+                                <div class="stat-label">Days Streak</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Your Badges -->
+                    <div class="leaderboard-section" style="margin-top: 2rem;">
+                        <div class="section-header">
+                            <i class="fas fa-award"></i>
+                            <h2>Your Badges</h2>
+                        </div>
+                        
+                        <p>Earn badges by completing drills, mastering skills, and achieving milestones</p>
+                        
+                        <div class="badges-container">
+                            <div class="badge earned">
+                                <i class="fas fa-fire-extinguisher"></i>
+                                <h4>Fire Expert</h4>
+                                <p>5 fire drills</p>
+                            </div>
+                            
+                            <div class="badge earned">
+                                <i class="fas fa-house-damage"></i>
+                                <h4>Quake Ready</h4>
+                                <p>3 earthquake drills</p>
+                            </div>
+                            
+                            <div class="badge earned">
+                                <i class="fas fa-medal"></i>
+                                <h4>Drill Champion</h4>
+                                <p>10 drills completed</p>
+                            </div>
+                            
+                            <div class="badge earned">
+                                <i class="fas fa-brain"></i>
+                                <h4>Quick Thinker</h4>
+                                <p>90% quiz average</p>
+                            </div>
+                            
+                            <div class="badge locked">
+                                <i class="fas fa-trophy"></i>
+                                <h4>Top Performer</h4>
+                                <p>Reach top 5 ranking</p>
+                                <span class="lock-icon"><i class="fas fa-lock"></i></span>
+                            </div>
+                            
+                            <div class="badge locked">
+                                <i class="fas fa-star"></i>
+                                <h4>Master Prepper</h4>
+                                <p>Complete all modules</p>
+                                <span class="lock-icon"><i class="fas fa-lock"></i></span>
+                            </div>
+                            
+                            <div class="badge locked">
+                                <i class="fas fa-clock"></i>
+                                <h4>Consistency</h4>
+                                <p>30-day streak</p>
+                                <span class="lock-icon"><i class="fas fa-lock"></i></span>
+                            </div>
+                            
+                            <div class="badge locked">
+                                <i class="fas fa-graduation-cap"></i>
+                                <h4>Certified</h4>
+                                <p>Pass certification exam</p>
+                                <span class="lock-icon"><i class="fas fa-lock"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 DisasterReady. All rights reserved.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p>Making educational institutions safer through preparedness</p>
+        </div>
+    </footer>
+
+    <script>
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Simulate loading new data based on filter
+                // In a real application, this would fetch new data from the server
+                const rankingItems = document.querySelectorAll('.ranking-item:not(.user-rank)');
+                
+                // Animate the update
+                rankingItems.forEach(item => {
+                    item.style.opacity = '0.5';
+                });
+                
+                setTimeout(() => {
+                    rankingItems.forEach(item => {
+                        item.style.opacity = '1';
+                        
+                        // Simulate score changes based on filter
+                        if (button.textContent === 'Weekly') {
+                            const scoreElement = item.querySelector('.user-score');
+                            const currentScore = parseInt(scoreElement.textContent.replace(' pts', '').replace(',', ''));
+                            const newScore = Math.floor(currentScore * 0.3); // Weekly scores are lower
+                            scoreElement.textContent = newScore.toLocaleString() + ' pts';
+                        } else if (button.textContent === 'Monthly') {
+                            const scoreElement = item.querySelector('.user-score');
+                            const currentScore = parseInt(scoreElement.textContent.replace(' pts', '').replace(',', ''));
+                            const newScore = Math.floor(currentScore * 0.7); // Monthly scores are medium
+                            scoreElement.textContent = newScore.toLocaleString() + ' pts';
+                        } else {
+                            // Reset to original scores for "All Time"
+                            const scores = [2540, 2420, 2380, 2250, 2180];
+                            const scoreElements = document.querySelectorAll('.user-score:not(.user-rank .user-score)');
+                            
+                            scoreElements.forEach((element, index) => {
+                                if (index < scores.length) {
+                                    element.textContent = scores[index].toLocaleString() + ' pts';
+                                }
+                            });
+                        }
+                    });
+                }, 300);
+            });
+        });
+        
+        // Badge hover effect
+        const badges = document.querySelectorAll('.badge');
+        
+        badges.forEach(badge => {
+            badge.addEventListener('mouseenter', () => {
+                if (badge.classList.contains('locked')) {
+                    badge.style.cursor = 'pointer';
+                    badge.querySelector('.lock-icon').style.color = '#666';
+                }
+            });
+            
+            badge.addEventListener('mouseleave', () => {
+                if (badge.classList.contains('locked')) {
+                    badge.querySelector('.lock-icon').style.color = '#999';
+                }
+            });
+            
+            badge.addEventListener('click', () => {
+                if (badge.classList.contains('locked')) {
+                    const badgeName = badge.querySelector('h4').textContent;
+                    alert(`Earn the "${badgeName}" badge by completing specific challenges!`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

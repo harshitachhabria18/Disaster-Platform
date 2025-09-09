@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard - Disaster Preparedness{% endblock %}
+
+{% block styles %}
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/institute.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://ui-avatars.com/api/?name=ABC+Institute&background=random" alt="Institute">
+            <div>
+                <h3>ABC Institute</h3>
+                <p>Teacher Login</p>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> Student Participation</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> Institute Score</a></li>
+            <li><a href="#"><i class="fas fa-history"></i> Drill History</a></li>
+            <li><a href="#"><i class="fas fa-calendar-alt"></i> Drill Scheduling</a></li>
+            <li><a href="#"><i class="fas fa-question-circle"></i> Create Quiz</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Send Alerts</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i> Reports & Analytics</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="dashboard-header">
+            <div class="welcome-message">
+                <h1>Welcome, ABC Institute!</h1>
+                <p>Manage drills, quizzes, reports, and student preparedness</p>
+            </div>
+            <div class="quick-actions">
+                <button class="alert-btn" style="margin-top: 1rem;">
+                    <i class="fas fa-bell"></i>
+                    Send Alerts
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+
+            <!-- Institute Leaderboard -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-trophy"></i> Institute Leaderboard</h2>
+                    <a href="#">View All</a>
+                </div>
+                <ul class="leaderboard-list">
+                    <li class="leaderboard-item">
+                        <div class="rank rank-1">1</div>
+                        <div class="user-info">
+                            <h3>Westside High</h3>
+                            <p>2500 points</p>
+                        </div>
+                        <div class="score">95%</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="rank rank-2">2</div>
+                        <div class="user-info">
+                            <h3>North Academy</h3>
+                            <p>2400 points</p>
+                        </div>
+                        <div class="score">92%</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="rank rank-3">3</div>
+                        <div class="user-info">
+                            <h3>East Valley School</h3>
+                            <p>2300 points</p>
+                        </div>
+                        <div class="score">90%</div>
+                    </li>
+                    <li class="leaderboard-item">
+                        <div class="rank">4</div>
+                        <div class="user-info">
+                            <h3>ABC Institute</h3>
+                            <p>2200 points</p>
+                        </div>
+                        <div class="score">87%</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                </div>
+                <div class="quick-action-buttons">
+                    <div class="quick-action-btn">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Create Quiz</span>
+                    </div>
+                    <div class="quick-action-btn">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Schedule Drill</span>
+                    </div>
+                    <div class="quick-action-btn">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Submit Drill Report</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Incidents -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Recent Incidents</h2>
+                    <a href="#">View All</a>
+                </div>
+                <ul class="module-list">
+                    <li class="module-item">
+                        <div class="module-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="module-details">
+                            <h3>Electrical Hazard</h3>
+                            <p>Reported by John Doe • 2 hours ago</p>
+                        </div>
+                        <a href="#" class="module-action"><i class="fas fa-eye"></i></a>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-icon"><i class="fas fa-fire-extinguisher"></i></div>
+                        <div class="module-details">
+                            <h3>Fire Equipment Missing</h3>
+                            <p>Reported by Jane Smith • 1 day ago</p>
+                        </div>
+                        <a href="#" class="module-action"><i class="fas fa-eye"></i></a>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-icon"><i class="fas fa-building"></i></div>
+                        <div class="module-details">
+                            <h3>Structural Crack</h3>
+                            <p>Reported by Robert Brown • 3 days ago</p>
+                        </div>
+                        <a href="#" class="module-action"><i class="fas fa-eye"></i></a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Drill History -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-history"></i> Drill History</h2>
+                    <a href="#">View All</a>
+                </div>
+                <ul class="module-list">
+                    <li class="module-item">
+                        <div class="module-icon"><i class="fas fa-fire"></i></div>
+                        <div class="module-details">
+                            <h3>Fire Drill</h3>
+                            <p>Sep 5, 2023 • 89% Participation</p>
+                        </div>
+                        <a href="#" class="module-action"><i class="fas fa-chart-bar"></i></a>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-icon"><i class="fas fa-house-damage"></i></div>
+                        <div class="module-details">
+                            <h3>Earthquake Drill</h3>
+                            <p>Aug 22, 2023 • 92% Participation</p>
+                        </div>
+                        <a href="#" class="module-action"><i class="fas fa-chart-bar"></i></a>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-icon"><i class="fas fa-water"></i></div>
+                        <div class="module-details">
+                            <h3>Flood Drill</h3>
+                            <p>Jul 30, 2023 • 85% Participation</p>
+                        </div>
+                        <a href="#" class="module-action"><i class="fas fa-chart-bar"></i></a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Participation Overview -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-users"></i> Participation Overview</h2>
+                </div>
+                <div class="participation-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">92%</div>
+                        <div class="stat-label">Last Drill Participation</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">243</div>
+                        <div class="stat-label">Registered Students in Last Drill</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Institute Score -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Institute Score</h2>
+                    <a href="#">Full Report</a>
+                </div>
+                <div class="participation-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">87%</div>
+                        <div class="stat-label">Current Score</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">#12</div>
+                        <div class="stat-label">National Rank</div>
+                    </div>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.9rem;">Based on drill performance, quiz results, and
+                    participation rates.</p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Action buttons functionality
+    const actionButtons = document.querySelectorAll('.action-btn');
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const action = this.textContent.trim();
+            alert(`Opening: ${action}`);
+        });
+    });
+
+    // Alert button functionality
+    const alertBtn = document.querySelector('.alert-btn');
+    alertBtn.addEventListener('click', function () {
+        alert('Opening Send Alerts functionality');
+    });
+
+    // Quick action buttons functionality
+    const quickActionButtons = document.querySelectorAll('.quick-action-btn');
+    quickActionButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const action = this.querySelector('span').textContent;
+            alert(`Opening: ${action}`);
+        });
+    });
+
+    // Module action handlers
+    const moduleActions = document.querySelectorAll('.module-action');
+    moduleActions.forEach(action => {
+        action.addEventListener('click', function (e) {
+            e.preventDefault();
+            const actionType = this.querySelector('i').className;
+            const moduleName = this.closest('.module-item').querySelector('h3').textContent;
+
+            if (actionType.includes('eye')) {
+                alert(`Viewing incident: ${moduleName}`);
+            } else if (actionType.includes('chart-bar')) {
+                alert(`Viewing analytics for: ${moduleName}`);
+            }
+        });
+    });
+
+    // Sidebar menu active state
+    const menuItems = document.querySelectorAll('.sidebar-menu a');
+    menuItems.forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+            menuItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
+{% endblock %}
