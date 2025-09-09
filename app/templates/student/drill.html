@@ -17,13 +17,14 @@
     <!-- Drill Content -->
     <div class="drill-content">
         <div class="drill-types">
-            <!-- Virtual Drill -->
+            <!-- Virtual Drills -->
+            {% for drill in virtual_drills %}
             <div class="drill-card">
                 <div class="drill-card-header">
                     <i class="fas fa-desktop"></i>
-                    <h2>Virtual Drills</h2>
+                    <h2>{{ drill.title }}</h2>
                 </div>
-                <p>Practice emergency procedures in a safe, simulated environment. Virtual drills help you learn proper responses without real-world risks.</p>
+                <p>{{ drill.description or "No description available." }}</p>
 
                 <div class="drill-features">
                     <h3>What you'll practice:</h3>
@@ -37,7 +38,7 @@
                 </div>
 
                 <div class="drill-actions">
-                    <button class="btn-drill btn-drill-primary" onclick="startVirtualDrill()">
+                    <button class="btn-drill btn-drill-primary" onclick="startVirtualDrill({{ drill.drill_id }})">
                         <i class="fas fa-play"></i> Start Virtual Drill
                     </button>
                     <button class="btn-drill btn-drill-secondary">
@@ -45,14 +46,16 @@
                     </button>
                 </div>
             </div>
+            {% endfor %}
 
-            <!-- Physical Drill -->
+            <!-- Physical Drills -->
+            {% for drill in physical_drills %}
             <div class="drill-card">
                 <div class="drill-card-header">
                     <i class="fas fa-running"></i>
-                    <h2>Physical Drills</h2>
+                    <h2>{{ drill.title }}</h2>
                 </div>
-                <p>Participate in scheduled on-site drills to practice emergency response in real-world scenarios with guidance from instructors.</p>
+                <p>{{ drill.description or "No description available." }}</p>
 
                 <div class="drill-features">
                     <h3>Next scheduled drills:</h3>
@@ -65,84 +68,51 @@
 
                 <div class="drill-actions">
                     <button class="btn-drill btn-drill-primary">
-                        <i class="fas fa-calendar-check"></i> Schedule Participation
+                        <i class="fas fa-calendar-check"></i> Register Drills
                     </button>
                     <button class="btn-drill btn-drill-secondary">
-                        <i class="fas fa-list"></i> View All Drills
+                        <i class="fas fa-list"></i> View Completed Drills
                     </button>
                 </div>
             </div>
+            {% endfor %}
         </div>
 
         <div class="drill-sidebar">
             <!-- Progress Tracking -->
             <div class="sidebar-card">
                 <h3><i class="fas fa-chart-line"></i> Your Drill Progress</h3>
-                <div class="achievement-stats">
-                    <div class="stat">
-                        <div class="stat-number">12</div>
-                        <div class="stat-label">Drills Completed</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">7</div>
-                        <div class="stat-label">Badges Earned</div>
-                    </div>
-                </div>
+                <p>Completed Drills: {{ completed_drills|length }}</p>
             </div>
 
             <!-- Upcoming Drills -->
             <div class="sidebar-card">
                 <h3><i class="fas fa-calendar-alt"></i> Upcoming Drills</h3>
                 <ul class="upcoming-drills">
+                    {% for drill in physical_drills %}
                     <li class="upcoming-drill">
-                        <h4>Earthquake Drill</h4>
-                        <p>Main campus - All buildings</p>
+                        <h4>{{ drill.title }}</h4>
+                        <p>{{ drill.location or "Location not specified" }}</p>
                         <div class="drill-date">
-                            <i class="fas fa-clock"></i> Fri, Oct 15 • 10:00 AM
+                            <i class="fas fa-clock"></i> {{ drill.scheduled_date.strftime("%a, %b %d • %I:%M %p") }}
                         </div>
                     </li>
-                    <li class="upcoming-drill">
-                        <h4>Fire Evacuation</h4>
-                        <p>Science building only</p>
-                        <div class="drill-date">
-                            <i class="fas fa-clock"></i> Tue, Oct 19 • 2:30 PM
-                        </div>
-                    </li>
-                    <li class="upcoming-drill">
-                        <h4>Lockdown Drill</h4>
-                        <p>All classrooms</p>
-                        <div class="drill-date">
-                            <i class="fas fa-clock"></i> Mon, Oct 25 • 9:00 AM
-                        </div>
-                    </li>
+                    {% endfor %}
                 </ul>
             </div>
 
             <!-- Earned Badges -->
             <div class="sidebar-card">
                 <h3><i class="fas fa-award"></i> Your Badges</h3>
-                <div class="badges-container">
-                    <div class="badge">
-                        <i class="fas fa-fire-extinguisher"></i>
-                        <h4>Fire Safety Expert</h4>
-                        <p>Completed 5 fire drills</p>
-                    </div>
-                    <div class="badge">
-                        <i class="fas fa-house-damage"></i>
-                        <h4>Earthquake Ready</h4>
-                        <p>Mastered earthquake safety</p>
-                    </div>
-                    <div class="badge">
-                        <i class="fas fa-first-aid"></i>
-                        <h4>First Aid Pro</h4>
-                        <p>First aid certification</p>
-                    </div>
-                    <div class="badge">
-                        <i class="fas fa-medal"></i>
-                        <h4>Drill Champion</h4>
-                        <p>10 drills completed</p>
-                    </div>
-                </div>
+                {% if badges %}
+                    <ul>
+                    {% for badge in badges %}
+                        <li>{{ badge.name }}</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No badges earned yet.</p>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -152,122 +122,94 @@
 <div class="modal" id="virtualDrillModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Virtual Earthquake Drill</h2>
+            <h2 id="modalDrillTitle"></h2>
             <button class="close-modal" onclick="closeModal()">&times;</button>
         </div>
         <div class="modal-body">
-            <div class="simulation-container">
-                <div class="simulation-scenario">
-                    <h3>Scenario: Earthquake During Class</h3>
-                    <p>You're in a classroom when a strong earthquake begins. The ground is shaking violently, and objects are falling from shelves.</p>
-                    <p>What should you do first?</p>
-                </div>
-
-                <div class="simulation-actions">
-                    <div class="simulation-action" onclick="selectAction(this, 'correct')">
-                        <i class="fas fa-people-arrows"></i>
-                        <h4>Drop, Cover, and Hold On</h4>
-                        <p>Get under a sturdy desk and hold on</p>
-                    </div>
-                    <div class="simulation-action" onclick="selectAction(this, 'incorrect')">
-                        <i class="fas fa-running"></i>
-                        <h4>Run Outside Immediately</h4>
-                        <p>Quickly exit the building</p>
-                    </div>
-                    <div class="simulation-action" onclick="selectAction(this, 'incorrect')">
-                        <i class="fas fa-door-open"></i>
-                        <h4>Stand in a Doorway</h4>
-                        <p>Move to the nearest doorway</p>
-                    </div>
-                    <div class="simulation-action" onclick="selectAction(this, 'incorrect')">
-                        <i class="fas fa-elevator"></i>
-                        <h4>Take the Elevator</h4>
-                        <p>Use elevator to evacuate quickly</p>
-                    </div>
-                </div>
-
-                <div class="simulation-feedback" id="simulationFeedback">
-                    <!-- Feedback will be inserted here -->
-                </div>
-
-                <div class="simulation-progress">
-                    <div class="progress-info">
-                        <span>Question 1 of 5</span>
-                        <span>20% Complete</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 20%;"></div>
-                    </div>
-                </div>
-
-                <button class="btn-drill btn-drill-primary" id="nextQuestionBtn" style="width: 100%; margin-top: 1.5rem; display: none;">
-                    <i class="fas fa-arrow-right"></i> Next Question
-                </button>
-            </div>
+            <form id="virtualDrillForm" method="POST" action="{{ url_for('student.drills') }}">
+                <input type="hidden" name="drill_id" id="modalDrillId">
+                <div id="modalQuestionsContainer"></div>
+                <button type="submit" class="btn-drill btn-drill-primary" style="width:100%; margin-top:1rem;">Submit Drill</button>
+            </form>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
+<!-- Populate allDrills from virtual_drills -->
 <script>
-    // Virtual Drill functionality
-    function startVirtualDrill() {
-        document.getElementById('virtualDrillModal').style.display = 'flex';
-        resetSimulation();
-    }
-
-    function closeModal() {
-        document.getElementById('virtualDrillModal').style.display = 'none';
-    }
-
-    function resetSimulation() {
-        const actions = document.querySelectorAll('.simulation-action');
-        actions.forEach(action => {
-            action.classList.remove('correct', 'incorrect');
-        });
-        document.getElementById('simulationFeedback').style.display = 'none';
-        document.getElementById('nextQuestionBtn').style.display = 'none';
-    }
-
-    function selectAction(element, correctness) {
-        const actions = document.querySelectorAll('.simulation-action');
-        actions.forEach(action => {
-            action.classList.remove('correct', 'incorrect');
-        });
-
-        element.classList.add(correctness);
-
-        const feedback = document.getElementById('simulationFeedback');
-        feedback.style.display = 'block';
-
-        if (correctness === 'correct') {
-            feedback.className = 'simulation-feedback feedback-correct';
-            feedback.innerHTML = `
-                <h4><i class="fas fa-check-circle"></i> Correct!</h4>
-                <p>During an earthquake, you should immediately Drop, Cover, and Hold On. Getting under a sturdy desk protects you from falling objects.</p>
-            `;
-        } else {
-            feedback.className = 'simulation-feedback feedback-incorrect';
-            feedback.innerHTML = `
-                <h4><i class="fas fa-times-circle"></i> Incorrect</h4>
-                <p>Running outside during an earthquake is dangerous due to falling debris. The safest action is to Drop, Cover, and Hold On.</p>
-            `;
-        }
-
-        document.getElementById('nextQuestionBtn').style.display = 'flex';
-    }
-
-    window.onclick = function(event) {
-        const modal = document.getElementById('virtualDrillModal');
-        if (event.target === modal) {
-            closeModal();
-        }
-    }
-
-    document.getElementById('nextQuestionBtn').addEventListener('click', function() {
-        alert('In a real application, this would load the next question in the virtual drill.');
-        closeModal();
-    });
+const allDrills = {
+    {% for drill in virtual_drills %}
+    {{ drill.drill_id }}: {
+        title: {{ drill.title|tojson }},
+        questions: [
+            {% for question in drill.questions %}
+            {
+                id: {{ question.question_id }},
+                text: {{ question.question_text|tojson }},
+                options: [
+                    {% for option in question.options %}
+                    { id: {{ option.option_id }}, text: {{ option.option_text|tojson }} }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+};
 </script>
+
+<script>
+// Function to open virtual drill modal and populate questions
+function startVirtualDrill(drillId) {
+    const drill = allDrills[drillId];  // Get the drill data using drillId
+    if (!drill) return;
+
+    // Set modal title and hidden drill_id input
+    document.getElementById('modalDrillTitle').textContent = drill.title;
+    document.getElementById('modalDrillId').value = drillId;
+
+    // Reset previous questions
+    const container = document.getElementById('modalQuestionsContainer');
+    container.innerHTML = '';
+
+    // Loop through questions
+    drill.questions.forEach((q, idx) => {
+        const questionBlock = document.createElement('div');
+        questionBlock.className = 'question-block';
+
+        // Question heading
+        let html = `<h4>Q${idx + 1}. ${q.text}</h4>`;
+
+        // Options for the question
+        q.options.forEach(opt => {
+            html += `
+            <div class="option">
+                <input type="radio" name="question_${q.id}" id="option_${opt.id}" value="${opt.id}" required>
+                <label for="option_${opt.id}">${opt.text}</label>
+            </div>`;
+        });
+
+        questionBlock.innerHTML = html;
+        container.appendChild(questionBlock);
+    });
+
+    // Show the modal
+    document.getElementById('virtualDrillModal').style.display = 'flex';
+}
+
+// Function to close the modal
+function closeModal() {
+    document.getElementById('virtualDrillModal').style.display = 'none';
+}
+
+// Close modal if clicking outside modal content
+window.onclick = function(event) {
+    const modal = document.getElementById('virtualDrillModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+</script>
+
 {% endblock %}

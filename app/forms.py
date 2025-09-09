@@ -33,6 +33,14 @@ def validate_admin_id(form, field):
     if form.role.data == 'admin' and not field.data:
         raise ValidationError("Administrator ID is required.")
 
+def validate_student_class(form, field):
+    if form.role.data == 'student' and not field.data:
+        raise ValidationError("Class is required for students.")
+
+def validate_roll_no(form, field):
+    if form.role.data == 'student' and not field.data:
+        raise ValidationError("Roll number is required for students.")
+
 
 class RegisterForm(FlaskForm):
     role = SelectField(
@@ -52,6 +60,11 @@ class RegisterForm(FlaskForm):
     institute_id = StringField('Institute ID', validators=[validate_student_id])
     teacher_code = StringField('Teacher Code', validators=[validate_teacher_code])
     admin_id = StringField('Administrator ID', validators=[validate_admin_id])
+
+    # new student fields
+    student_class = StringField('Class', validators=[validate_student_class])
+    roll_no = StringField('Roll Number', validators=[validate_roll_no])
+
     phone = StringField(
         'Phone Number*',
         validators=[

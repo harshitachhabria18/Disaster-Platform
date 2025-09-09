@@ -13,8 +13,8 @@
         <div class="sidebar-header">
             <img src="https://ui-avatars.com/api/?name=Student+User&background=random" alt="User">
             <div>
-                <h3>Student User</h3>
-                <p>Grade 10</p>
+                <h3>{{ student_name }}</h3>
+                <p>Grade {{ student_grade }}</p>
             </div>
         </div>
 
@@ -37,7 +37,7 @@
     <main class="main-content">
         <div class="dashboard-header">
             <div class="welcome-message">
-                <h1>Welcome back, Student!</h1>
+                <h1>Welcome back, {{ student_name }}!</h1>
                 <p>Stay prepared and keep learning about disaster management</p>
             </div>
             <div class="quick-actions">
