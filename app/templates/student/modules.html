@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}Learning Modules - DisasterReady{% endblock %}
+
+{% block styles %}
+<!-- You can add page-specific styles here if needed -->
+{% endblock %}
+
+{% block content %}
+<div class="modules-container">
+    <!-- Modules Header -->
+    <div class="modules-header">
+        <h1>Learning Resources</h1>
+        <p>Access educational materials to enhance your disaster preparedness knowledge</p>
+    </div>
+
+    <!-- Modules Content -->
+    <div class="modules-content">
+        <div class="resources-grid">
+            <!-- PDFs Section -->
+            <div class="resource-section">
+                <div class="section-header">
+                    <i class="fas fa-file-pdf"></i>
+                    <h2>PDF Guides & Instructions</h2>
+                </div>
+                <div class="resources-list">
+                    {% for m in modules if m.module_type == 'pdf' %}
+                    <div class="resource-card" onclick="openResource('{{ m.title }}', 'pdf', '{{ m.media_link }}')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>{{ m.title }}</h3>
+                        <p>{{ m.description }}</p>
+                        <div class="resource-meta">
+                            <span>{{ m.page_count }} pages</span>
+                            <span>{{ m.file_size }}</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <!-- <div class="resource-card" onclick="openResource('Flood Preparedness Manual', 'pdf')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>Flood Preparedness Manual</h3>
+                        <p>How to prepare for flooding emergencies and evacuation procedures</p>
+                        <div class="resource-meta">
+                            <span>12 pages</span>
+                            <span>1.8 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div> -->
+                    
+                    <!-- <div class="resource-card" onclick="openResource('First Aid Basics', 'pdf')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>First Aid Basics</h3>
+                        <p>Essential first aid procedures for emergency situations</p>
+                        <div class="resource-meta">
+                            <span>8 pages</span>
+                            <span>1.2 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div> -->
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Videos Section -->
+            <div class="resource-section">
+                <div class="section-header">
+                    <i class="fas fa-video"></i>
+                    <h2>Instructional Videos</h2>
+                </div>
+                <div class="resources-list">
+                    {% for m in modules if m.module_type == 'video' %}
+                    <div class="resource-card" onclick="openResource('{{ m.title }}', 'video', '{{ m.media_link }}')">
+                        <div class="resource-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>{{ m.title }}</h3>
+                        <p>{{ m.description }}</p>
+                        <div class="resource-meta">
+                            <span>{{ m.duration }}</span>
+                            <span>{{ m.quality }}</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <!-- <div class="resource-card" onclick="openResource('Fire Evacuation Drill', 'video')">
+                        <div class="resource-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>Fire Evacuation Drill</h3>
+                        <p>Proper techniques for evacuating during a fire emergency</p>
+                        <div class="resource-meta">
+                            <span>7:45 min</span>
+                            <span>HD</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <div class="resource-card" onclick="openResource('Emergency Kit Preparation', 'video')">
+                        <div class="resource-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>Emergency Kit Preparation</h3>
+                        <p>How to assemble a comprehensive emergency preparedness kit</p>
+                        <div class="resource-meta">
+                            <span>12:10 min</span>
+                            <span>HD</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div> -->
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div class="resource-section">
+                <div class="section-header">
+                    <i class="fas fa-file-alt"></i>
+                    <h2>Reports & Case Studies</h2>
+                </div>
+                <div class="resources-list">
+                    {% for m in modules if m.module_type == 'text' %}
+                    <div class="resource-card" onclick="openResource('{{ m.title }}', 'text', '{{ m.media_link }}')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>{{ m.title }}</h3>
+                        <p>{{ m.description }}</p>
+                        <!-- <div class="resource-meta">
+                            <span>24 pages</span>
+                            <span>3.1 MB</span>
+                        </div> -->
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <!-- <div class="resource-card" onclick="openResource('Hurricane Katrina Report', 'report')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Hurricane Katrina Report</h3>
+                        <p>Lessons learned from the Hurricane Katrina disaster response</p>
+                        <div class="resource-meta">
+                            <span>18 pages</span>
+                            <span>2.7 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div>
+                    
+                    <div class="resource-card" onclick="openResource('Earthquake Resilience Study', 'report')">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Earthquake Resilience Study</h3>
+                        <p>Research on building community resilience to earthquakes</p>
+                        <div class="resource-meta">
+                            <span>32 pages</span>
+                            <span>4.2 MB</span>
+                        </div>
+                        <div class="resource-action">Click to view →</div>
+                    </div> -->
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="modules-sidebar">
+            <div class="sidebar-card">
+                <h3><i class="fas fa-book"></i> Latest Modules</h3>
+                <div class="related-modules-list">
+                    {% for m in latest_modules %}
+                    <div class="related-module" onclick="openResource('{{ m.title }}', '{{ m.module_type }}', '{{ m.media_link }}')">
+                        <div class="related-module-icon">
+                            {% if m.module_type == 'pdf' %}
+                                <i class="fas fa-file-pdf"></i>
+                            {% elif m.module_type == 'video' %}
+                                <i class="fas fa-video"></i>
+                            {% elif m.module_type == 'text' %}
+                                <i class="fas fa-file-alt"></i>
+                            {% else %}
+                                <i class="fas fa-cube"></i> <!-- fallback -->
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <h4>{{ m.title }}</h4>
+                            <p>
+                                {% if m.module_type == 'pdf' %}
+                                    {{ m.page_count }} pages • {{ m.file_size }}
+                                {% elif m.module_type == 'video' %}
+                                    Video • {{ m.duration }}
+                                {% elif m.module_type == 'text' %}
+                                    Report • {{ m.page_count }} pages
+                                {% else %}
+                                    {{ m.description[:40] }}...
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %} 
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3><i class="fas fa-robot"></i> AI Summarizer</h3>
+                <div class="ai-summarizer">
+                    <p>Generate a summary of any resource using AI</p>
+                    <textarea placeholder="Paste text or enter topic you want summarized..."></textarea>
+                    <button>
+                        <i class="fas fa-magic"></i> Generate Summary
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3><i class="fas fa-download"></i> Download All Resources</h3>
+                <p>Download a zip file containing all learning materials</p>
+                <button class="btn" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-file-archive"></i> Download All
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resource Modal -->
+<div class="modal" id="resourceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Resource Title</h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openResource(title, type, link) {
+        const modal = document.getElementById('resourceModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        modalTitle.textContent = title;
+        modalBody.innerHTML = '';
+
+        if (type === 'pdf') {
+            // ⭐ CHANGED: Extract fileId from Google Drive link
+            const fileIdMatch = link.match(/\/d\/(.*)\/view/);
+            const fileId = fileIdMatch ? fileIdMatch[1] : null;
+
+            if (fileId) {
+                const viewUrl = `https://drive.google.com/file/d/${fileId}/preview`; 
+                const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`; 
+
+                modalBody.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="font-size: 4rem; color: #e74c3c; margin-bottom: 1rem;">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>${title}</h3>
+                        <p>You can view or download this PDF.</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                            <a href="${viewUrl}" target="_blank" class="btn"><i class="fas fa-eye"></i> View PDF</a>
+                            <a href="${downloadUrl}" class="btn"><i class="fas fa-download"></i> Download</a>
+                        </div>
+                    </div>`;
+            } else {
+                modalBody.innerHTML = `<p>Invalid Google Drive link</p>`; 
+            }
+        } else if (type === 'video') {
+            modalBody.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px;">
+                        <iframe src="${link}" 
+                                style="position: absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen></iframe>
+                    </div>
+                    <h3 style="margin-top: 1rem;">${title}</h3>
+                    <p>${title} - Educational video</p>
+                </div>`;
+        } else if (type === 'text') {
+            modalBody.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 4rem; color: #2ecc71; margin-bottom: 1rem;">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>${title}</h3>
+                    <p><a href="${link}" target="_blank" class="btn"><i class="fas fa-eye"></i> View Report</a></p>
+                </div>`;
+        }
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('resourceModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('resourceModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}

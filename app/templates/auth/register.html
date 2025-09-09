@@ -51,12 +51,23 @@
                     {% endfor %}
                 </div>
                 
-
-                <!-- Student: Institute ID -->
+                <!-- Student Registration -->
                 <div class="form-group role-field" id="studentField" style="display:none;">
                     <label for="institute_id">Institute ID *</label>
                     {{ form.institute_id(class="form-control", id="institute_id") }}
                     {% for error in form.institute_id.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+
+                    <label for="student_class">Class *</label>
+                    {{ form.student_class(class="form-control", id="student_class") }}
+                    {% for error in form.student_class.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+
+                    <label for="roll_no">Roll Number *</label>
+                    {{ form.roll_no(class="form-control", id="roll_no") }}
+                    {% for error in form.roll_no.errors %}
                         <small class="text-danger">{{ error }}</small>
                     {% endfor %}
                 </div>
