@@ -2,12 +2,15 @@
 from flask import Blueprint, render_template, request, jsonify, session
 from flask_wtf.csrf import CSRFProtect, CSRFError
 import google.generativeai as genai
-import json
+import json, os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 bp = Blueprint('main', __name__)
 
 # Configure Gemini API key
-genai.configure(api_key="AIzaSyACWrwvgjaq__iFQlnjTW-FGQ91QUIh_Hw")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Create the model with system instruction
 generation_config = {
