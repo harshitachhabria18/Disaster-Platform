@@ -1,9 +1,20 @@
 # app/routes/student.py
 from app import db
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from app.models import User, Institute, Student,Module, Drill, DrillParticipation, QuizAttempt, Question, Option, Badge
 from datetime import datetime
+from flask import request
+from groq import Groq
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
+import yt_dlp
+import PyPDF2
+import os
+import tempfile
+import subprocess
+import logging
+from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
 
 bp = Blueprint('student', __name__)
 
@@ -122,3 +133,258 @@ def drills():
         badges=badges,
         results=results
     )
+
+@bp.route('/incident')
+def incident():
+    return render_template('student/incident.html')
+
+@bp.route('/progress')
+def progress():
+    return render_template('student/progress.html')
+
+@bp.route('/mapgame')
+def mapgame():
+    return render_template('student/mapgame.html')
+
+@bp.route('/quiz')
+def quiz():
+    return render_template('student/quiz.html')
+
+@bp.route('/quiz2')
+def quiz2():
+    return render_template('student/quiz2.html')
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+load_dotenv()
+
+# Initialize Groq client
+groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+# Allowed file extensions for PDF upload
+ALLOWED_EXTENSIONS = {'pdf'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# ---------- PDF Text Extraction ----------
+def extract_text_from_pdf(pdf_file):
+    try:
+        logger.info("Extracting text from PDF")
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        
+        for page in pdf_reader.pages:
+            text += page.extract_text() + "\n"
+        
+        logger.info(f"Extracted {len(text)} characters from PDF")
+        return text
+    except Exception as e:
+        logger.error(f"Error extracting text from PDF: {e}")
+        raise
+
+# ---------- Helper: Extract video ID ----------
+def get_video_id(url):
+    try:
+        if "youtu.be" in url:
+            return url.split("/")[-1].split("?")[0]
+        elif "youtube.com" in url:
+            if "v=" in url:
+                return url.split("v=")[-1].split("&")[0]
+            elif "youtu.be" in url:
+                return url.split("/")[-1]
+        return None
+    except Exception as e:
+        logger.error(f"Error extracting video ID: {e}")
+        return None
+
+# ---------- Step 1: Try Captions ----------
+def get_transcript(video_id):
+    try:
+        logger.info(f"Attempting to get transcript for video ID: {video_id}")
+        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        text = " ".join([t["text"] for t in transcript])
+        logger.info(f"Successfully retrieved transcript with {len(text)} characters")
+        return text
+    except TranscriptsDisabled:
+        logger.warning("Transcripts disabled for this video")
+        return None
+    except Exception as e:
+        logger.error(f"Error getting transcript: {e}")
+        return None
+
+def transcribe_with_whisper(video_url):
+    try:
+        logger.info("Starting Whisper transcription")
+        # Create a temp directory
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_audio_path = os.path.join(temp_dir, "audio.%(ext)s")
+
+            # Download audio with yt-dlp
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'outtmpl': temp_audio_path,
+                'quiet': False,
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '192',
+                }],
+            }
+            
+            logger.info("Downloading audio...")
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([video_url])
+
+            # Find the downloaded mp3 file
+            mp3_file = os.path.join(temp_dir, "audio.mp3")
+            
+            if not os.path.exists(mp3_file):
+                # Try to find the actual file name
+                files = os.listdir(temp_dir)
+                mp3_files = [f for f in files if f.endswith('.mp3')]
+                if mp3_files:
+                    mp3_file = os.path.join(temp_dir, mp3_files[0])
+                else:
+                    raise FileNotFoundError("No MP3 file found after download")
+
+            logger.info(f"Audio file found: {mp3_file}")
+
+            # Transcribe with Groq Whisper
+            logger.info("Transcribing with Whisper...")
+            with open(mp3_file, "rb") as audio_file:
+                transcript = groq_client.audio.transcriptions.create(
+                    model="whisper-large-v3",
+                    file=audio_file
+                )
+
+            logger.info("Whisper transcription completed successfully")
+            return transcript.text
+            
+    except Exception as e:
+        logger.error(f"Error in Whisper transcription: {e}")
+        raise
+
+def summarize_with_groq(text, content_type="video"):
+    try:
+        logger.info(f"Summarizing {content_type} text with {len(text)} characters")
+        
+        # Truncate text if it's too long (Groq has token limits)
+        if len(text) > 10000:
+            text = text[:10000] + "... [truncated for summarization]"
+            logger.warning("Text truncated for summarization")
+        
+        # Different system prompts based on content type
+        if content_type == "pdf":
+            system_prompt = "You are a helpful assistant that summarizes PDF documents for students and professionals. Provide clear, concise summaries in simple language, highlighting key points and main ideas. Use clear formatting with headings and bullet points but avoid Markdown syntax."
+        else:
+            system_prompt = "You are a helpful assistant that summarizes video transcripts for students. Provide clear, concise summaries in simple language. Use clear formatting with headings and bullet points but avoid Markdown syntax."
+        
+        completion = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "system", 
+                    "content": system_prompt
+                },
+                {
+                    "role": "user", 
+                    "content": f"Please summarize the following {content_type} content:\n\n{text}"
+                }
+            ],
+            max_tokens=500,
+            temperature=0.3
+        )
+        
+        summary = completion.choices[0].message.content
+        logger.info("Summary generated successfully")
+        
+        # Clean up any Markdown formatting that might have been used
+        summary = summary.replace("**", "").replace("*", "• ").replace("#", "")
+        
+        return summary
+        
+    except Exception as e:
+        logger.error(f"Error in summarization: {e}")
+        return f"Error generating summary: {str(e)}"
+
+
+@bp.route("/summarize_video", methods=["POST"])
+def summarize_video():
+    summary = None
+    error = None
+    
+    video_url = request.form.get("video_url")
+    logger.info(f"Processing video URL: {video_url}")
+    
+    if not video_url:
+        error = "Please provide a YouTube URL"
+        logger.warning("No URL provided")
+    else:
+        video_id = get_video_id(video_url)
+        
+        if not video_id:
+            error = "Invalid YouTube URL"
+            logger.warning(f"Invalid URL: {video_url}")
+        else:
+            try:
+                # Try captions first
+                transcript_text = get_transcript(video_id)
+
+                # If no captions, use whisper
+                if not transcript_text:
+                    logger.info("No transcript available, using Whisper")
+                    transcript_text = transcribe_with_whisper(video_url)
+                
+                if transcript_text:
+                    summary = summarize_with_groq(transcript_text, "video")
+                else:
+                    error = "Could not retrieve or transcribe video content"
+                    logger.error("Failed to get transcript")
+                    
+            except Exception as e:
+                error = f"Error processing video: {str(e)}"
+                logger.error(f"Video processing error: {e}")
+
+    return jsonify({"summary": summary, "error": error})
+
+@bp.route("/summarize_pdf", methods=["POST"])
+def summarize_pdf():
+    summary = None
+    error = None
+    
+    # Check if the post request has the file part
+    if 'pdf_file' not in request.files:
+        error = "No file uploaded"
+        logger.warning("No file uploaded")
+        return jsonify({"summary": summary, "error": error})
+    
+    file = request.files['pdf_file']
+    
+    # If user does not select file, browser also submits an empty part without filename
+    if file.filename == '':
+        error = "No file selected"
+        logger.warning("No file selected")
+        return jsonify({"summary": summary, "error": error})
+    
+    if file and allowed_file(file.filename):
+        try:
+            # Extract text from PDF
+            pdf_text = extract_text_from_pdf(file)
+            
+            if pdf_text and len(pdf_text.strip()) > 0:
+                summary = summarize_with_groq(pdf_text, "pdf")
+            else:
+                error = "Could not extract text from PDF. The file might be scanned or encrypted."
+                logger.error("Failed to extract text from PDF")
+                
+        except Exception as e:
+            error = f"Error processing PDF: {str(e)}"
+            logger.error(f"PDF processing error: {e}")
+    else:
+        error = "Invalid file type. Please upload a PDF file."
+        logger.warning(f"Invalid file type: {file.filename}")
+
+    return jsonify({"summary": summary, "error": error})

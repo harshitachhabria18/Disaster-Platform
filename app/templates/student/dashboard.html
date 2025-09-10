@@ -117,16 +117,20 @@
                     <a href="#">View All</a>
                 </div>
                 <div class="quiz-categories">
-                    <div class="quiz-category">
-                        <i class="fas fa-check-circle"></i>
-                        <h3>Multiple Choice</h3>
-                        <p>Test your knowledge</p>
-                    </div>
-                    <div class="quiz-category">
-                        <i class="fas fa-times-circle"></i>
-                        <h3>True/False</h3>
-                        <p>Verify facts</p>
-                    </div>
+                    <a href="{{ url_for('student.quiz') }}" style="text-decoration: none;">
+                        <div class="quiz-category">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>Multiple Choice</h3>
+                            <p>Test your knowledge</p>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('student.quiz2') }}" style="text-decoration: none;">
+                        <div class="quiz-category">
+                            <i class="fas fa-times-circle"></i>
+                            <h3>True/False</h3>
+                            <p>Verify facts</p>
+                        </div>
+                    </a>
                 </div>
             </div>
 
@@ -179,11 +183,14 @@
                     <a href="#">View All</a>
                 </div>
                 <div class="quiz-categories">
-                    <div class="quiz-category" style="background: linear-gradient(135deg, #4cc9f0, #4895ef);">
-                        <i class="fas fa-map-marked-alt"></i>
-                        <h3>Map Game</h3>
-                        <p>Evacuation routes</p>
-                    </div>
+                    <a href="{{ url_for('student.mapgame') }}" style="text-decoration: none; color: inherit;">
+                        <div class="quiz-category" style="background: linear-gradient(135deg, #4cc9f0, #4895ef);">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <h3>Map Game</h3>
+                            <p>Evacuation routes</p>
+                        </div>
+                    </a>
+
                     <div class="quiz-category" style="background: linear-gradient(135deg, #f9c74f, #f8961e);">
                         <i class="fas fa-puzzle-piece"></i>
                         <h3>Puzzle</h3>
@@ -264,13 +271,5 @@
             }
         });
     }
-
-    // Quiz category selection
-    const quizCategories = document.querySelectorAll('.quiz-category');
-    quizCategories.forEach(category => {
-        category.addEventListener('click', function () {
-            alert('Starting quiz: ' + this.querySelector('h3').textContent);
-        });
-    });
 </script>
 {% endblock %}

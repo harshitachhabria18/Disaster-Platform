@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Disaster Preparedness Chatbot{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+    .chatbot-container {
+        max-width: 900px;
+        margin: 20px auto;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .chat-header {
+        background: #2c7da0;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .chat-header h2 {
+        margin: 0 0 10px;
+        font-size: 1.8rem;
+    }
+
+    .chat-header p {
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    .toggle-container {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: center;
+    }
+
+    .tts-toggle {
+        display: flex;
+        align-items: center;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+        margin-right: 10px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 26px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: #2c7da0;
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(24px);
+    }
+
+    .toggle-label {
+        font-size: 0.95rem;
+        color: #495057;
+    }
+
+    .chat-box {
+        height: 400px;
+        padding: 20px;
+        overflow-y: auto;
+        background-color: #f8f9fa;
+    }
+
+    .chat-message {
+        margin: 15px 0;
+        display: flex;
+    }
+
+    .chat-message.user {
+        justify-content: flex-end;
+    }
+
+    .chat-message.bot {
+        justify-content: flex-start;
+    }
+
+    .message-content {
+        max-width: 70%;
+        padding: 12px 16px;
+        border-radius: 18px;
+        line-height: 1.5;
+    }
+
+    .chat-message.user .message-content {
+        background-color: #2c7da0;
+        color: white;
+    }
+
+    .chat-message.bot .message-content {
+        background-color: #e9ecef;
+        color: #212529;
+    }
+
+    .chat-input-container {
+        padding: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .chat-input {
+        display: flex;
+    }
+
+    #message-input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid #ced4da;
+        border-radius: 4px 0 0 4px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    #send-btn {
+        padding: 12px 20px;
+        background-color: #2c7da0;
+        border: none;
+        color: white;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.2s;
+    }
+
+    #send-btn:hover {
+        background-color: #1a5d7a;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .chatbot-container {
+            margin: 10px;
+        }
+
+        .message-content {
+            max-width: 85%;
+        }
+
+        .chat-box {
+            height: 350px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chatbot-container">
+    <div class="chat-header">
+        <h2><i class="fas fa-robot"></i> Disaster Preparedness Assistant</h2>
+        <p>Ask me anything about disaster safety and preparedness</p>
+    </div>
+
+    <!-- TTS & Language Toggle -->
+    <div class="toggle-container">
+        <div class="tts-toggle">
+            <label class="switch">
+                <input type="checkbox" id="ttsToggle" />
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Enable Text-to-Speech</span>
+        </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-box" id="chat-box">
+        <div class="chat-message bot">
+            <div class="message-content">
+                Hi! I'm your Disaster Preparedness Assistant. You can ask me anything about disaster safety,
+                preparedness, emergency procedures, or response strategies. How can I help you today?
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input-container">
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Type your question about disaster preparedness..."
+                required />
+            <button id="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const chatBox = document.getElementById("chat-box");
+        const messageInput = document.getElementById("message-input");
+        const sendBtn = document.getElementById("send-btn");
+        const ttsToggle = document.getElementById("ttsToggle");
+
+        function cleanTextForTTS(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '$1')
+                .replace(/\*(.*?)\*/g, '$1')
+                .replace(/#+\s?/g, '')
+                .replace(/[_*~`]/g, '')
+                .replace(/:[^:\s]*(?:::[^:\s]*)*:/g, '')
+                .replace(/[\u{1F600}-\u{1F6FF}]/gu, '')
+                .replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, '')
+                .trim();
+        }
+
+        function speakWithTTS(text) {
+            const cleaned = cleanTextForTTS(text);
+            const utterance = new SpeechSynthesisUtterance(cleaned);
+            utterance.lang = "en-US";
+
+            const voices = speechSynthesis.getVoices();
+            const matchedVoice = voices.find(v => v.lang === "en-US");
+            if (matchedVoice) utterance.voice = matchedVoice;
+
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+        }
+
+        function appendMessage(text, isBot = false) {
+            const msg = document.createElement("div");
+            msg.classList.add("chat-message", isBot ? "bot" : "user");
+
+            const content = document.createElement("div");
+            content.classList.add("message-content");
+
+            if (isBot) {
+                content.innerHTML = marked.parse(text);
+            } else {
+                content.textContent = text;
+            }
+
+            msg.appendChild(content);
+            chatBox.appendChild(msg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            if (isBot && ttsToggle.checked) {
+                speakWithTTS(text);
+            }
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            appendMessage(message, false);
+            messageInput.value = "";
+
+            fetch("{{ url_for('main.chat') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({ message })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    speechSynthesis.cancel();
+                    appendMessage(data.response || "Something went wrong.", true);
+                })
+                .catch(() => {
+                    appendMessage("I'm having trouble connecting right now. Please try again shortly.", true);
+                });
+        }
+
+        sendBtn.addEventListener("click", sendMessage);
+        messageInput.addEventListener("keypress", e => {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        // Initialize TTS voices
+        window.speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+    });
+</script>
+{% endblock %}

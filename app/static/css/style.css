@@ -1,3 +1,4 @@
+/* style.css - Combined CSS for Disaster Preparedness App */
 * {
     margin: 0;
     padding: 0;
@@ -957,15 +958,6 @@ footer {
     color: var(--gray);
 }
 
-a.card-link {
-    display: block;
-    text-decoration: none;
-    color: inherit; /* keep text color same */
-}
-a.card-link:hover .card {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    transform: translateY(-3px);
-    transition: 0.3s;
 a.card-link {
     display: block;
     text-decoration: none;
@@ -1973,59 +1965,6 @@ textarea.form-control {
 
 .location-actions button.primary:hover {
     background-color: var(--secondary);
-}
-
-.teachers-list {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.teacher-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.teacher-item:hover {
-    border-color: var(--secondary);
-    background-color: #f9f9f9;
-}
-
-.teacher-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-right: 1rem;
-}
-
-.teacher-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.teacher-info {
-    flex: 1;
-}
-
-.teacher-info h4 {
-    margin-bottom: 0.2rem;
-    color: var(--primary);
-}
-
-.teacher-info p {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.teacher-checkbox {
-    margin-left: 1rem;
 }
 
 .form-actions {

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find the Safe Zone</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #F9F3EF;
+            color: #1B3C53;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: #1B3C53;
+            color: #F9F3EF;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-title {
+            text-align: center;
+            flex-grow: 1;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .user-profile:hover {
+            background-color: #3a5a70;
+            transform: scale(1.05);
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #D2C1B6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 20px;
+            color: #1B3C53;
+        }
+        
+        .username {
+            font-weight: bold;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-grow: 1;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .map-side {
+            flex: 7;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .info-side {
+            flex: 3;
+            background-color: #D2C1B6;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #456882;
+            padding: 15px;
+            border-radius: 15px;
+            color: #F9F3EF;
+        }
+        
+        .timer, .score {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #1B3C53;
+            color: #F9F3EF;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        button:hover {
+            background-color: #15283a;
+            transform: scale(1.05);
+        }
+        
+        .hazards-list {
+            background-color: #F9F3EF;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hazards-list h3 {
+            color: #1B3C53;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .hazard-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            gap: 10px;
+        }
+        
+        .hazard-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .blocked {
+            background-color: #ff4d4d;
+        }
+        
+        .flood {
+            background-color: #4d94ff;
+        }
+        
+        .fire {
+            background-color: #ff944d;
+        }
+        
+        .instructions {
+            background-color: #F9F3EF;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instructions h3 {
+            color: #1B3C53;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: #F9F3EF;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1B3C53;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: #ff4d4d;
+            transform: scale(1.1);
+        }
+        
+        .modal-title {
+            color: #1B3C53;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 28px;
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 10px;
+            margin-top: 20px;
+            animation: popIn 0.5s ease;
+        }
+        
+        .failure-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: #f44336;
+            color: white;
+            border-radius: 10px;
+            margin-top: 20px;
+            animation: popIn 0.5s ease;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .scoring {
+            background-color: #F9F3EF;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-top: auto;
+        }
+        
+        .scoring h3 {
+            color: #1B3C53;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .score-details {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        
+        .disaster-info {
+            background-color: #F9F3EF;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        
+        .disaster-info h3 {
+            color: #1B3C53;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 992px) {
+            .game-container {
+                flex-direction: column;
+            }
+            
+            .info-side {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="game-title">Find the Safe Zone</div>
+        <div class="user-profile">
+            <div class="avatar">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="game-container">
+        <div class="map-side">
+            <div id="map"></div>
+            
+            <div class="controls">
+                <div class="timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="time">00:00</span>
+                </div>
+                
+                <div class="buttons">
+                    <button id="reset-btn">
+                        <i class="fas fa-redo"></i> Reset Path
+                    </button>
+                    <button id="hint-btn">
+                        <i class="fas fa-lightbulb"></i> Get Hint
+                    </button>
+                </div>
+                
+                <div class="score">
+                    <i class="fas fa-star"></i>
+                    <span id="score-value">100</span>
+                </div>
+            </div>
+            
+            <div class="success-message" id="success-message">
+                <h2><i class="fas fa-check-circle"></i> Congratulations!</h2>
+                <p>You've found a safe route to the Safe Zone!</p>
+                <p>Time: <span id="success-time">00:00</span> | Score: <span id="success-score">100</span></p>
+            </div>
+            
+            <div class="failure-message" id="failure-message">
+                <h2><i class="fas fa-exclamation-circle"></i> Oops! Hazard Encountered</h2>
+                <p id="failure-reason">You crossed a blocked road!</p>
+                <p>Try again to find a safer route.</p>
+            </div>
+        </div>
+        
+        <div class="info-side">
+            <div class="disaster-info">
+                <h3><i class="fas fa-exclamation-triangle"></i> Current Disaster</h3>
+                <p id="disaster-type">Earthquake - Multiple road blockages</p>
+                <p id="disaster-details">Several roads are blocked due to collapsed buildings</p>
+            </div>
+            
+            <div class="hazards-list">
+                <h3><i class="fas fa-exclamation-triangle"></i> Hazards to Avoid</h3>
+                
+                <div class="hazard-item">
+                    <div class="hazard-icon blocked">
+                        <i class="fas fa-road"></i>
+                    </div>
+                    <div class="hazard-info">
+                        <strong>Blocked Roads</strong> - Avoid these paths
+                    </div>
+                </div>
+                
+                <div class="hazard-item">
+                    <div class="hazard-icon flood">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div class="hazard-info">
+                        <strong>Flood Zones</strong> - Do not enter water areas
+                    </div>
+                </div>
+                
+                <div class="hazard-item">
+                    <div class="hazard-icon fire">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="hazard-info">
+                        <strong>Fire Areas</strong> - Stay away from fire zones
+                    </div>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> How to Play</h3>
+                <ul>
+                    <li>Click on the map to create a path from Start to Safe Zone</li>
+                    <li>Avoid all hazards (red, blue, and orange areas)</li>
+                    <li>Each click adds a point to your path</li>
+                    <li>Reach the Safe Zone without touching hazards to win</li>
+                </ul>
+            </div>
+            
+            <div class="scoring">
+                <h3><i class="fas fa-chart-line"></i> Scoring</h3>
+                <div class="score-details">
+                    <span>Base Score:</span>
+                    <span>100 points</span>
+                </div>
+                <div class="score-details">
+                    <span>Time Bonus:</span>
+                    <span>+50 points (if completed in under 1 min)</span>
+                </div>
+                <div class="score-details">
+                    <span>Efficiency Bonus:</span>
+                    <span>Up to +30 points for shorter paths</span>
+                </div>
+                <div class="score-details">
+                    <span>Hazard Penalty:</span>
+                    <span>-100 points for each hazard hit</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="instructions-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-instructions">&times;</span>
+            <h2 class="modal-title">How to Play</h2>
+            
+            <div class="hazard-item">
+                <div class="hazard-icon" style="background-color: #28a745;">
+                    <i class="fas fa-flag"></i>
+                </div>
+                <div class="hazard-info">
+                    <strong>Starting Point:</strong> Your current location is marked with a "Start" marker
+                </div>
+            </div>
+            
+            <div class="hazard-item">
+                <div class="hazard-icon" style="background-color: #28a745;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="hazard-info">
+                    <strong>Safe Zone:</strong> The destination is marked with a "Safe Zone" marker
+                </div>
+            </div>
+            
+            <div class="hazard-item">
+                <div class="hazard-icon blocked">
+                    <i class="fas fa-road"></i>
+                </div>
+                <div class="hazard-info">
+                    <strong>Blocked Roads:</strong> Lines or areas that you must avoid
+                </div>
+            </div>
+            
+            <div class="hazard-item">
+                <div class="hazard-icon flood">
+                    <i class="fas fa-water"></i>
+                </div>
+                <div class="hazard-info">
+                    <strong>Flood Zones:</strong> Colored regions representing dangerous water areas
+                </div>
+            </div>
+            
+            <div class="hazard-item">
+                <div class="hazard-icon fire">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="hazard-info">
+                    <strong>Fire Areas:</strong> Colored regions representing dangerous fire zones
+                </div>
+            </div>
+            
+            <h3 style="margin: 20px 0 10px; color: #1B3C53;">Draw Your Path:</h3>
+            <p>Click step by step on the map to create a path from Start to Safe Zone. Each click adds a green dot to show your route. The path is connected automatically with a green line.</p>
+            
+            <h3 style="margin: 20px 0 10px; color: #1B3C53;">Avoid Hazards:</h3>
+            <p>If your path crosses any hazard, you will get a warning and the game will reset. Make sure your route goes around hazards to reach the Safe Zone safely.</p>
+            
+            <h3 style="margin: 20px 0 10px; color: #1B3C53;">Reaching the Safe Zone:</h3>
+            <p>Once your path reaches the Safe Zone without touching hazards, you win the game! 🎉 You can try again to find faster or safer routes.</p>
+            
+            <button style="margin-top: 20px; width: 100%;" id="start-game">
+                <i class="fas fa-play"></i> Start Game
+            </button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script>
+        // Initialize variables
+        let map, pathCoords = [], pathLine, startPoint, safeZonePoint;
+        let gameActive = false;
+        let startTime, timerInterval;
+        let currentScore = 100;
+        let baseScore = 100;
+        let hazards = [];
+        let currentDisaster = {};
+        
+        // Disaster scenarios with different hazards
+        const disasterScenarios = [
+            {
+                name: "Earthquake",
+                description: "Multiple roads are blocked due to collapsed buildings and debris",
+                hazards: [
+                    { type: "blocked", coords: [[28.617, 77.208], [28.619, 77.209]] },
+                    { type: "blocked", coords: [[28.615, 77.210], [28.616, 77.212]] },
+                    { type: "blocked", coords: [[28.618, 77.206], [28.620, 77.207]] },
+                    { type: "fire", coords: [[28.618, 77.211], [28.619, 77.212], [28.617, 77.213], [28.618, 77.211]] }
+                ]
+            },
+            {
+                name: "Flood",
+                description: "Heavy rainfall has caused flooding in low-lying areas",
+                hazards: [
+                    { type: "flood", coords: [[28.615, 77.205], [28.616, 77.207], [28.614, 77.208], [28.615, 77.205]] },
+                    { type: "flood", coords: [[28.617, 77.209], [28.618, 77.211], [28.616, 77.212], [28.617, 77.209]] },
+                    { type: "blocked", coords: [[28.617, 77.208], [28.619, 77.209]] },
+                    { type: "blocked", coords: [[28.615, 77.210], [28.616, 77.212]] }
+                ]
+            },
+            {
+                name: "Wildfire",
+                description: "A spreading wildfire has blocked several escape routes",
+                hazards: [
+                    { type: "fire", coords: [[28.615, 77.206], [28.616, 77.208], [28.614, 77.209], [28.615, 77.206]] },
+                    { type: "fire", coords: [[28.618, 77.211], [28.619, 77.212], [28.617, 77.213], [28.618, 77.211]] },
+                    { type: "blocked", coords: [[28.617, 77.208], [28.619, 77.209]] },
+                    { type: "blocked", coords: [[28.615, 77.210], [28.616, 77.212]] },
+                    { type: "blocked", coords: [[28.618, 77.206], [28.620, 77.207]] }
+                ]
+            },
+            {
+                name: "Hurricane",
+                description: "Strong winds have caused flooding and blocked roads with debris",
+                hazards: [
+                    { type: "flood", coords: [[28.615, 77.205], [28.616, 77.207], [28.614, 77.208], [28.615, 77.205]] },
+                    { type: "blocked", coords: [[28.617, 77.208], [28.619, 77.209]] },
+                    { type: "blocked", coords: [[28.615, 77.210], [28.616, 77.212]] },
+                    { type: "blocked", coords: [[28.618, 77.206], [28.620, 77.207]] },
+                    { type: "blocked", coords: [[28.619, 77.213], [28.621, 77.214]] }
+                ]
+            }
+        ];
+        
+        // Initialize map when the modal is closed
+        document.getElementById('start-game').addEventListener('click', function() {
+            document.getElementById('instructions-modal').style.display = 'none';
+            initMap();
+            startTimer();
+            gameActive = true;
+        });
+        
+        // Show instructions modal on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('instructions-modal').style.display = 'flex';
+        });
+        
+        // Close modal when clicking the X
+        document.getElementById('close-instructions').addEventListener('click', function() {
+            document.getElementById('instructions-modal').style.display = 'none';
+            initMap();
+            startTimer();
+            gameActive = true;
+        });
+        
+        // Initialize the map with a random disaster scenario
+        function initMap() {
+            // Clear any existing map
+            if (map) {
+                map.remove();
+            }
+            
+            // Create map centered on a school area
+            map = L.map('map').setView([28.6139, 77.2090], 16);
+            
+            // FIXED: Correct tile layer URL (removed the trailing slash)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Define start and safe zone points
+            startPoint = [28.6139, 77.2090];
+            safeZonePoint = [28.6200, 77.2100];
+            
+            // Add start marker
+            L.marker(startPoint, {
+                icon: L.divIcon({
+                    html: '<i class="fas fa-flag" style="color: #28a745; font-size: 28px;"></i>',
+                    className: 'custom-marker',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 30]
+                })
+            }).addTo(map).bindPopup("🚩 Start: You are here").openPopup();
+            
+            // Add safe zone marker
+            L.marker(safeZonePoint, {
+                icon: L.divIcon({
+                    html: '<i class="fas fa-check-circle" style="color: #28a745; font-size: 28px;"></i>',
+                    className: 'custom-marker',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 30]
+                })
+            }).addTo(map).bindPopup("✅ Safe Zone: Your destination");
+            
+            // Select a random disaster scenario
+            selectRandomDisaster();
+            
+            // Initialize path
+            pathCoords = [startPoint];
+            pathLine = L.polyline(pathCoords, {
+                color: '#28a745',
+                weight: 5
+            }).addTo(map);
+            
+            // Add click event to map
+            map.on('click', function(e) {
+                if (!gameActive) return;
+                
+                let newPoint = [e.latlng.lat, e.latlng.lng];
+                pathCoords.push(newPoint);
+                pathLine.setLatLngs(pathCoords);
+                
+                // Add a marker for the clicked point
+                L.circleMarker(e.latlng, {
+                    radius: 6,
+                    color: '#28a745',
+                    fillColor: '#7cde82',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map);
+                
+                // Check for hazards
+                checkHazards(newPoint);
+                
+                // Check if reached safe zone
+                checkSafeZone(newPoint);
+            });
+        }
+        
+        // Select a random disaster scenario and create hazards
+        function selectRandomDisaster() {
+            // Clear existing hazards
+            hazards.forEach(hazard => {
+                if (map.hasLayer(hazard)) {
+                    map.removeLayer(hazard);
+                }
+            });
+            hazards = [];
+            
+            // Select a random disaster
+            const randomIndex = Math.floor(Math.random() * disasterScenarios.length);
+            currentDisaster = disasterScenarios[randomIndex];
+            
+            // Update disaster info
+            document.getElementById('disaster-type').textContent = currentDisaster.name;
+            document.getElementById('disaster-details').textContent = currentDisaster.description;
+            
+            // Create hazards for this disaster
+            currentDisaster.hazards.forEach(hazardData => {
+                let hazard;
+                
+                if (hazardData.type === 'blocked') {
+                    hazard = L.polyline(hazardData.coords, {
+                        color: '#ff4d4d',
+                        weight: 8
+                    }).addTo(map).bindPopup("🚧 Blocked Road - Do not cross!");
+                } 
+                else if (hazardData.type === 'flood') {
+                    hazard = L.polygon(hazardData.coords, {
+                        color: '#4d94ff',
+                        fillColor: '#4d94ff',
+                        fillOpacity: 0.5,
+                        weight: 2
+                    }).addTo(map).bindPopup("🌊 Flooded Area - Avoid water!");
+                } 
+                else if (hazardData.type === 'fire') {
+                    hazard = L.polygon(hazardData.coords, {
+                        color: '#ff944d',
+                        fillColor: '#ff944d',
+                        fillOpacity: 0.5,
+                        weight: 2
+                    }).addTo(map).bindPopup("🔥 Fire Zone - Stay away from fire!");
+                }
+                
+                hazards.push(hazard);
+            });
+        }
+        
+        // Start the timer
+        function startTimer() {
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        
+        // Update the timer display
+        function updateTimer() {
+            const currentTime = new Date();
+            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
+            const seconds = (elapsedTime % 60).toString().padStart(2, '0');
+            
+            document.getElementById('time').textContent = `${minutes}:${seconds}`;
+            
+            // Update score based on time (longer time = lower score)
+            const timeBonus = Math.max(0, 60 - elapsedTime);
+            currentScore = baseScore + timeBonus;
+            document.getElementById('score-value').textContent = currentScore;
+        }
+        
+        // Check if the path crosses any hazards
+        function checkHazards(newPoint) {
+            // Convert path to Turf.js line
+            const line = turf.lineString(pathCoords);
+            
+            // Check each hazard for intersections
+            for (const hazard of hazards) {
+                let turfHazard;
+                const latLngs = hazard.getLatLngs();
+                
+                if (hazard instanceof L.Polygon) {
+                    // Convert polygon coordinates
+                    const coords = latLngs[0].map(latlng => [latlng.lat, latlng.lng]);
+                    coords.push(coords[0]); // Close the polygon
+                    turfHazard = turf.polygon([coords]);
+                    
+                    // Check if point is inside polygon or line intersects it
+                    if (turf.booleanPointInPolygon(turf.point(newPoint), turfHazard) || 
+                        turf.lineIntersect(line, turfHazard).features.length > 0) {
+                        showFailure(`You entered a ${hazard._popup._content.split(' - ')[0]}! Try again.`);
+                        return;
+                    }
+                } 
+                else if (hazard instanceof L.Polyline) {
+                    // Convert polyline coordinates
+                    const coords = latLngs.map(latlng => [latlng.lat, latlng.lng]);
+                    turfHazard = turf.lineString(coords);
+                    
+                    // Check if line intersects
+                    if (turf.lineIntersect(line, turfHazard).features.length > 0) {
+                        showFailure(`You crossed a ${hazard._popup._content.split(' - ')[0]}! Try again.`);
+                        return;
+                    }
+                }
+            }
+        }
+        
+        // Check if the player reached the safe zone
+        function checkSafeZone(newPoint) {
+            if (turf.distance(turf.point(newPoint), turf.point(safeZonePoint)) < 0.1) {
+                showSuccess();
+            }
+        }
+        
+        // Show success message
+        function showSuccess() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            // Calculate final score
+            const elapsedTime = Math.floor((new Date() - startTime) / 1000);
+            const efficiencyBonus = Math.max(0, 30 - pathCoords.length);
+            const finalScore = currentScore + efficiencyBonus;
+            
+            document.getElementById('success-time').textContent = document.getElementById('time').textContent;
+            document.getElementById('success-score').textContent = finalScore;
+            
+            // Show success message
+            document.getElementById('success-message').style.display = 'block';
+            document.getElementById('failure-message').style.display = 'none';
+            
+            // Update leaderboard (in a real game, this would be saved to a database)
+            updateLeaderboard(finalScore, elapsedTime);
+        }
+        
+        // Show failure message
+        function showFailure(reason) {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            document.getElementById('failure-reason').textContent = reason;
+            document.getElementById('failure-message').style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+            
+            // Penalize score for hitting a hazard
+            baseScore = Math.max(0, baseScore - 20);
+        }
+        
+        // Reset the game with a new disaster scenario
+        function resetGame() {
+            // Clear the path
+            pathCoords = [startPoint];
+            pathLine.setLatLngs(pathCoords);
+            
+            // Clear all markers except start and safe zone
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.CircleMarker) {
+                    map.removeLayer(layer);
+                }
+            });
+            
+            // Reset messages
+            document.getElementById('success-message').style.display = 'none';
+            document.getElementById('failure-message').style.display = 'none';
+            
+            // Select a new random disaster scenario
+            selectRandomDisaster();
+            
+            // Reset timer and score
+            clearInterval(timerInterval);
+            startTimer();
+            baseScore = 100;
+            currentScore = 100;
+            document.getElementById('score-value').textContent = currentScore;
+            
+            gameActive = true;
+        }
+        
+        // Provide a hint to the player
+        function provideHint() {
+            alert("Hint: Try going around the hazards. The safest path might not be the most direct one!");
+            
+            // Penalize score for using a hint
+            baseScore = Math.max(0, baseScore - 10);
+            document.getElementById('score-value').textContent = baseScore;
+        }
+        
+        // Update leaderboard (simplified for this demo)
+        function updateLeaderboard(score, time) {
+            // In a real application, this would update a database
+            console.log(`New score: ${score} points in ${time} seconds`);
+        }
+        
+        // Set up button event listeners
+        document.getElementById('reset-btn').addEventListener('click', resetGame);
+        document.getElementById('hint-btn').addEventListener('click', provideHint);
+    </script>
+</body>
+</html>

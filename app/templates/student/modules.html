@@ -3,7 +3,232 @@
 {% block title %}Learning Modules - DisasterReady{% endblock %}
 
 {% block styles %}
-<!-- You can add page-specific styles here if needed -->
+<style>
+    /* AI Summarizer Styles */
+    .summarizer-tabs {
+        display: flex;
+        background: #e9ecef;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .summarizer-tab {
+        flex: 1;
+        text-align: center;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 3px solid transparent;
+    }
+
+    .summarizer-tab.active {
+        background: white;
+        color: #2c7da0;
+        border-bottom-color: #2c7da0;
+    }
+
+    .summarizer-tab:hover {
+        background: rgba(255, 255, 255, 0.7);
+    }
+
+    .summarizer-tab i {
+        margin-right: 8px;
+    }
+
+    .summarizer-content {
+        display: none;
+    }
+
+    .summarizer-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .summarizer-form {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #2c7da0;
+    }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+    .url-input {
+        width: 100%;
+        padding: 14px 15px 14px 45px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .url-input:focus {
+        outline: none;
+        border-color: #2c7da0;
+        box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.1);
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-size: 18px;
+    }
+
+    .file-upload {
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 25px;
+        text-align: center;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .file-upload:hover {
+        border-color: #2c7da0;
+        background: rgba(44, 125, 160, 0.05);
+    }
+
+    .file-upload i {
+        font-size: 2.5rem;
+        color: #2c7da0;
+        margin-bottom: 12px;
+    }
+
+    .file-upload p {
+        color: #6c757d;
+        margin-bottom: 12px;
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    .file-name {
+        margin-top: 12px;
+        font-style: italic;
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .submit-btn {
+        background: linear-gradient(135deg, #2c7da0 0%, #1a5d7a 100%);
+        color: white;
+        border: none;
+        padding: 14px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(44, 125, 160, 0.3);
+    }
+
+    .submit-btn:disabled {
+        background: #ced4da;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .summarizer-result {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #2c7da0;
+        display: none;
+    }
+
+    .summarizer-result h4 {
+        color: #2c7da0;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .summary-content {
+        line-height: 1.6;
+        color: #495057;
+        white-space: pre-wrap;
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #2c7da0;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+
+    .error-message {
+        color: #e74c3c;
+        margin-top: 10px;
+        padding: 10px;
+        background: #ffe6e6;
+        border-radius: 5px;
+        border-left: 3px solid #e74c3c;
+        display: none;
+        font-size: 14px;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -37,32 +262,6 @@
                         </div>
                         <div class="resource-action">Click to view →</div>
                     </div>
-                    
-                    <!-- <div class="resource-card" onclick="openResource('Flood Preparedness Manual', 'pdf')">
-                        <div class="resource-icon">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <h3>Flood Preparedness Manual</h3>
-                        <p>How to prepare for flooding emergencies and evacuation procedures</p>
-                        <div class="resource-meta">
-                            <span>12 pages</span>
-                            <span>1.8 MB</span>
-                        </div>
-                        <div class="resource-action">Click to view →</div>
-                    </div> -->
-                    
-                    <!-- <div class="resource-card" onclick="openResource('First Aid Basics', 'pdf')">
-                        <div class="resource-icon">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <h3>First Aid Basics</h3>
-                        <p>Essential first aid procedures for emergency situations</p>
-                        <div class="resource-meta">
-                            <span>8 pages</span>
-                            <span>1.2 MB</span>
-                        </div>
-                        <div class="resource-action">Click to view →</div>
-                    </div> -->
                     {% endfor %}
                 </div>
             </div>
@@ -87,32 +286,6 @@
                         </div>
                         <div class="resource-action">Click to view →</div>
                     </div>
-                    
-                    <!-- <div class="resource-card" onclick="openResource('Fire Evacuation Drill', 'video')">
-                        <div class="resource-icon">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <h3>Fire Evacuation Drill</h3>
-                        <p>Proper techniques for evacuating during a fire emergency</p>
-                        <div class="resource-meta">
-                            <span>7:45 min</span>
-                            <span>HD</span>
-                        </div>
-                        <div class="resource-action">Click to view →</div>
-                    </div>
-                    
-                    <div class="resource-card" onclick="openResource('Emergency Kit Preparation', 'video')">
-                        <div class="resource-icon">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <h3>Emergency Kit Preparation</h3>
-                        <p>How to assemble a comprehensive emergency preparedness kit</p>
-                        <div class="resource-meta">
-                            <span>12:10 min</span>
-                            <span>HD</span>
-                        </div>
-                        <div class="resource-action">Click to view →</div>
-                    </div> -->
                     {% endfor %}
                 </div>
             </div>
@@ -131,38 +304,8 @@
                         </div>
                         <h3>{{ m.title }}</h3>
                         <p>{{ m.description }}</p>
-                        <!-- <div class="resource-meta">
-                            <span>24 pages</span>
-                            <span>3.1 MB</span>
-                        </div> -->
                         <div class="resource-action">Click to view →</div>
                     </div>
-                    
-                    <!-- <div class="resource-card" onclick="openResource('Hurricane Katrina Report', 'report')">
-                        <div class="resource-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h3>Hurricane Katrina Report</h3>
-                        <p>Lessons learned from the Hurricane Katrina disaster response</p>
-                        <div class="resource-meta">
-                            <span>18 pages</span>
-                            <span>2.7 MB</span>
-                        </div>
-                        <div class="resource-action">Click to view →</div>
-                    </div>
-                    
-                    <div class="resource-card" onclick="openResource('Earthquake Resilience Study', 'report')">
-                        <div class="resource-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h3>Earthquake Resilience Study</h3>
-                        <p>Research on building community resilience to earthquakes</p>
-                        <div class="resource-meta">
-                            <span>32 pages</span>
-                            <span>4.2 MB</span>
-                        </div>
-                        <div class="resource-action">Click to view →</div>
-                    </div> -->
                     {% endfor %}
                 </div>
             </div>
@@ -174,16 +317,17 @@
                 <h3><i class="fas fa-book"></i> Latest Modules</h3>
                 <div class="related-modules-list">
                     {% for m in latest_modules %}
-                    <div class="related-module" onclick="openResource('{{ m.title }}', '{{ m.module_type }}', '{{ m.media_link }}')">
+                    <div class="related-module"
+                        onclick="openResource('{{ m.title }}', '{{ m.module_type }}', '{{ m.media_link }}')">
                         <div class="related-module-icon">
                             {% if m.module_type == 'pdf' %}
-                                <i class="fas fa-file-pdf"></i>
+                            <i class="fas fa-file-pdf"></i>
                             {% elif m.module_type == 'video' %}
-                                <i class="fas fa-video"></i>
+                            <i class="fas fa-video"></i>
                             {% elif m.module_type == 'text' %}
-                                <i class="fas fa-file-alt"></i>
+                            <i class="fas fa-file-alt"></i>
                             {% else %}
-                                <i class="fas fa-cube"></i> <!-- fallback -->
+                            <i class="fas fa-cube"></i>
                             {% endif %}
                         </div>
 
@@ -191,29 +335,90 @@
                             <h4>{{ m.title }}</h4>
                             <p>
                                 {% if m.module_type == 'pdf' %}
-                                    {{ m.page_count }} pages • {{ m.file_size }}
+                                {{ m.page_count }} pages • {{ m.file_size }}
                                 {% elif m.module_type == 'video' %}
-                                    Video • {{ m.duration }}
+                                Video • {{ m.duration }}
                                 {% elif m.module_type == 'text' %}
-                                    Report • {{ m.page_count }} pages
+                                Report • {{ m.page_count }} pages
                                 {% else %}
-                                    {{ m.description[:40] }}...
+                                {{ m.description[:40] }}...
                                 {% endif %}
                             </p>
                         </div>
                     </div>
-                    {% endfor %} 
+                    {% endfor %}
                 </div>
             </div>
 
+            <!-- AI Summarizer Card -->
             <div class="sidebar-card">
                 <h3><i class="fas fa-robot"></i> AI Summarizer</h3>
                 <div class="ai-summarizer">
-                    <p>Generate a summary of any resource using AI</p>
-                    <textarea placeholder="Paste text or enter topic you want summarized..."></textarea>
-                    <button>
-                        <i class="fas fa-magic"></i> Generate Summary
-                    </button>
+                    <p>Generate AI-powered summaries of videos and documents</p>
+
+                    <!-- Summarizer Tabs -->
+                    <div class="summarizer-tabs">
+                        <div class="summarizer-tab active" data-tab="video">
+                            <i class="fab fa-youtube"></i> Video
+                        </div>
+                        <div class="summarizer-tab" data-tab="pdf">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </div>
+                    </div>
+
+                    <!-- Video Summarizer -->
+                    <div class="summarizer-content active" id="video-summarizer">
+                        <div class="summarizer-form">
+                            <form id="videoForm">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <!-- Add this line -->
+                                <div class="form-group">
+                                    <label for="video_url">YouTube Video URL:</label>
+                                    <div class="input-with-icon">
+                                        <i class="fab fa-youtube input-icon"></i>
+                                        <input type="url" id="video_url" name="video_url"
+                                            placeholder="https://youtube.com/... or https://youtu.be/..." required
+                                            class="url-input">
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="submit-btn" id="videoSubmitBtn">
+                                    <i class="fas fa-sparkles"></i> Generate Video Summary
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- PDF Summarizer -->
+                    <div class="summarizer-content" id="pdf-summarizer">
+                        <div class="summarizer-form">
+                            <form id="pdfForm" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <!-- Add this line -->
+                                <div class="form-group">
+                                    <label for="pdf_file">Upload PDF Document:</label>
+                                    <div class="file-upload" id="fileUpload">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Click to browse or drag & drop your PDF file</p>
+                                        <span class="file-name" id="fileName">No file selected</span>
+                                        <input type="file" id="pdf_file" name="pdf_file" class="file-input"
+                                            accept=".pdf" required>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="submit-btn" id="pdfSubmitBtn">
+                                    <i class="fas fa-sparkles"></i> Generate PDF Summary
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="error-message" id="summarizer-error"></div>
+
+                    <div class="summarizer-result" id="summarizer-result">
+                        <h4><i class="fas fa-file-alt"></i> AI Summary</h4>
+                        <div class="summary-content" id="summary-content"></div>
+                    </div>
                 </div>
             </div>
 
@@ -251,13 +456,12 @@
         modalBody.innerHTML = '';
 
         if (type === 'pdf') {
-            // ⭐ CHANGED: Extract fileId from Google Drive link
             const fileIdMatch = link.match(/\/d\/(.*)\/view/);
             const fileId = fileIdMatch ? fileIdMatch[1] : null;
 
             if (fileId) {
-                const viewUrl = `https://drive.google.com/file/d/${fileId}/preview`; 
-                const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`; 
+                const viewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
                 modalBody.innerHTML = `
                     <div style="text-align: center; padding: 2rem;">
@@ -272,7 +476,7 @@
                         </div>
                     </div>`;
             } else {
-                modalBody.innerHTML = `<p>Invalid Google Drive link</p>`; 
+                modalBody.innerHTML = `<p>Invalid Google Drive link</p>`;
             }
         } else if (type === 'video') {
             modalBody.innerHTML = `
@@ -303,11 +507,149 @@
         document.getElementById('resourceModal').style.display = 'none';
     }
 
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         const modal = document.getElementById('resourceModal');
         if (event.target === modal) {
             closeModal();
         }
     }
+
+    // AI Summarizer functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        // Tab switching for summarizer
+        document.querySelectorAll('.summarizer-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.summarizer-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.summarizer-content').forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-summarizer`).classList.add('active');
+
+                // Clear results when switching tabs
+                document.getElementById('summarizer-result').style.display = 'none';
+                document.getElementById('summarizer-error').style.display = 'none';
+            });
+        });
+
+        // File upload functionality
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = document.getElementById('pdf_file');
+        const fileName = document.getElementById('fileName');
+
+        fileUpload.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                fileName.textContent = fileInput.files[0].name;
+            } else {
+                fileName.textContent = 'No file selected';
+            }
+        });
+
+        // Drag and drop functionality
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.style.borderColor = '#2c7da0';
+            fileUpload.style.backgroundColor = 'rgba(44, 125, 160, 0.1)';
+        });
+
+        fileUpload.addEventListener('dragleave', () => {
+            fileUpload.style.borderColor = '#dee2e6';
+            fileUpload.style.backgroundColor = '#f8f9fa';
+        });
+
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.style.borderColor = '#dee2e6';
+            fileUpload.style.backgroundColor = '#f8f9fa';
+
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                fileName.textContent = fileInput.files[0].name;
+            }
+        });
+
+        // Video form submission
+        document.getElementById('videoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processSummarization('video');
+        });
+
+        // PDF form submission
+        document.getElementById('pdfForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processSummarization('pdf');
+        });
+
+        async function processSummarization(type) {
+            const submitBtn = document.getElementById(`${type}SubmitBtn`);
+            const errorDiv = document.getElementById('summarizer-error');
+            const resultDiv = document.getElementById('summarizer-result');
+            const summaryContent = document.getElementById('summary-content');
+
+            // Hide previous results
+            errorDiv.style.display = 'none';
+            resultDiv.style.display = 'none';
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+
+            try {
+                const formData = new FormData();
+
+                // Add CSRF token to form data - get it from the correct form
+                const form = document.getElementById(`${type}Form`);
+                const csrfToken = form.querySelector('input[name="csrf_token"]').value;
+                formData.append('csrf_token', csrfToken);
+
+                if (type === 'video') {
+                    const videoUrl = document.getElementById('video_url').value;
+                    if (!videoUrl) {
+                        throw new Error('Please enter a YouTube URL');
+                    }
+                    formData.append('video_url', videoUrl);
+                } else if (type === 'pdf') {
+                    const pdfFile = document.getElementById('pdf_file').files[0];
+                    if (!pdfFile) {
+                        throw new Error('Please select a PDF file');
+                    }
+                    formData.append('pdf_file', pdfFile);
+                }
+
+                // Use the correct endpoint for student routes
+                const response = await fetch(`/student/summarize_${type}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    // Display the summary
+                    summaryContent.textContent = data.summary;
+                    resultDiv.style.display = 'block';
+                }
+            } catch (error) {
+                showError('Failed to generate summary. Please try again.');
+                console.error('Summarizer error:', error);
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sparkles"></i> Generate ' +
+                    (type === 'video' ? 'Video' : 'PDF') + ' Summary';
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('summarizer-error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    });
 </script>
 {% endblock %}

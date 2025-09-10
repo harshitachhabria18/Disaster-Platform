@@ -403,12 +403,10 @@
                     <div class="progress" id="progressBar"></div>
                 </div>
             </div>
-            <div class="question" id="question">What is the main cause of flooding?</div>
+            <div class="question" id="question">Floods are always caused by heavy rainfall.</div>
             <div class="options" id="options">
-                <div class="option" onclick="selectOption(this)">Heavy rainfall</div>
-                <div class="option" onclick="selectOption(this)">Earthquakes</div>
-                <div class="option" onclick="selectOption(this)">High temperatures</div>
-                <div class="option" onclick="selectOption(this)">Strong winds</div>
+                <div class="option" onclick="selectOption(this, true)">True</div>
+                <div class="option" onclick="selectOption(this, false)">False</div>
             </div>
             <div class="navigation">
                 <button class="btn btn-secondary" onclick="previousQuestion()" id="prevBtn">Previous</button>
@@ -432,166 +430,253 @@
     </div>
 
     <script>
-        // Quiz data for all disasters (20 questions each)
+        // Quiz data for all disasters (20 True/False questions each)
         const quizData = {
             flood: [
                 {
-                    question: "What is the main cause of flooding?",
-                    options: ["Heavy rainfall", "Earthquakes", "High temperatures", "Strong winds"],
-                    answer: 0
+                    question: "Floods are always caused by heavy rainfall.",
+                    answer: false
                 },
                 {
-                    question: "Which of these areas is most prone to flooding?",
-                    options: ["Deserts", "Low-lying areas near rivers", "Mountain tops", "Forests"],
-                    answer: 1
+                    question: "Flash floods can occur with little to no warning.",
+                    answer: true
                 },
                 {
-                    question: "What should you do during a flood warning?",
-                    options: ["Go to the basement", "Move to higher ground", "Continue normal activities", "Open all windows"],
-                    answer: 1
+                    question: "It is safe to walk through floodwater if it's only ankle-deep.",
+                    answer: false
                 },
                 {
-                    question: "How can flooding be prevented in urban areas?",
-                    options: ["Building more roads", "Constructing drainage systems", "Cutting down trees", "Increasing car usage"],
-                    answer: 1
+                    question: "Urban areas with more pavement are more prone to flooding.",
+                    answer: true
                 },
                 {
-                    question: "What is a flash flood?",
-                    options: ["A flood that occurs slowly", "A sudden and severe flood", "A flood that only happens at night", "A flood caused by melting snow"],
-                    answer: 1
+                    question: "Floodwaters can be contaminated with hazardous materials.",
+                    answer: true
                 },
                 {
-                    question: "Which item is most important in a flood emergency kit?",
-                    options: ["Portable radio", "Extra books", "Perfume", "Beach towel"],
-                    answer: 0
+                    question: "All flood events are predictable days in advance.",
+                    answer: false
                 },
                 {
-                    question: "Why should you avoid walking through floodwater?",
-                    options: ["It might be dirty", "You could slip", "It might be deeper than it appears", "All of the above"],
-                    answer: 3
+                    question: "Moving to higher ground is the safest action during a flood.",
+                    answer: true
                 },
                 {
-                    question: "What does NOAA stand for in relation to floods?",
-                    options: ["National Oceanic and Atmospheric Administration", "National Organization Against Flooding", "Network of Oceanic and Atmospheric Data", "National Office for Aquatic Affairs"],
-                    answer: 0
+                    question: "Floods only occur near rivers and coastlines.",
+                    answer: false
                 },
                 {
-                    question: "What is the most dangerous aspect of flooding?",
-                    options: ["Water damage to property", "Contamination of drinking water", "Rapidly moving water", "All of the above"],
-                    answer: 3
+                    question: "Flood insurance is typically included in standard homeowner policies.",
+                    answer: false
                 },
                 {
-                    question: "How can you protect your home from flood damage?",
-                    options: ["Installing flood barriers", "Elevating electrical systems", "Waterproofing basements", "All of the above"],
-                    answer: 3
+                    question: "Six inches of moving water can knock a person off their feet.",
+                    answer: true
+                },
+                {
+                    question: "Floods are the most common natural disaster worldwide.",
+                    answer: true
+                },
+                {
+                    question: "Dams and levees completely eliminate flood risk.",
+                    answer: false
+                },
+                {
+                    question: "Climate change has no impact on flood frequency or severity.",
+                    answer: false
+                },
+                {
+                    question: "Creating a family emergency plan is important for flood preparedness.",
+                    answer: true
+                },
+                {
+                    question: "Floodwaters can weaken road foundations and bridges.",
+                    answer: true
+                },
+                {
+                    question: "All flood warnings should be treated with equal seriousness.",
+                    answer: true
+                },
+                {
+                    question: "Floods only happen during specific seasons.",
+                    answer: false
+                },
+                {
+                    question: "It's safe to drive through floodwater if you have a large vehicle.",
+                    answer: false
+                },
+                {
+                    question: "Floods can cause electrical hazards.",
+                    answer: true
+                },
+                {
+                    question: "After a flood, it's safe to return home immediately when waters recede.",
+                    answer: false
                 }
-                // 10 more questions would be added here to make 20 total
             ],
             fire: [
                 {
-                    question: "What is the first thing you should do in case of a fire?",
-                    options: ["Gather your belongings", "Call 911", "Try to put out the fire", "Evacuate the building"],
-                    answer: 3
+                    question: "You should stop, drop, and roll if your clothes catch fire.",
+                    answer: true
                 },
                 {
-                    question: "What does a fire extinguisher's PASS acronym stand for?",
-                    options: ["Pull, Aim, Squeeze, Sweep", "Push, Activate, Spray, Stop", "Point, Alert, Safety, Secure", "Pull, Alert, Spray, Sweep"],
-                    answer: 0
+                    question: "Water should always be used to put out a grease fire.",
+                    answer: false
                 },
                 {
-                    question: "Which of these is not a common cause of house fires?",
-                    options: ["Cooking accidents", "Electrical faults", "Reading books", "Heating equipment"],
-                    answer: 2
+                    question: "Smoke alarms should be tested monthly.",
+                    answer: true
                 },
                 {
-                    question: "What should you do if your clothes catch fire?",
-                    options: ["Run for help", "Roll on the ground", "Pour water on yourself", "Take off your clothes"],
-                    answer: 1
+                    question: "Fire extinguishers are effective on all types of fires.",
+                    answer: false
                 },
                 {
-                    question: "How often should you test your smoke alarms?",
-                    options: ["Once a year", "Once a month", "Once a week", "Once a day"],
-                    answer: 1
+                    question: "Closing doors can help contain a fire.",
+                    answer: true
                 },
                 {
-                    question: "What is the recommended distance between a space heater and flammable materials?",
-                    options: ["1 foot", "3 feet", "6 feet", "10 feet"],
-                    answer: 1
+                    question: "You should use an elevator during a fire evacuation.",
+                    answer: false
                 },
                 {
-                    question: "Which type of fire extinguisher is best for electrical fires?",
-                    options: ["Class A", "Class B", "Class C", "Class D"],
-                    answer: 2
+                    question: "Cooking is the leading cause of home fires.",
+                    answer: true
                 },
                 {
-                    question: "What should you do if you're trapped in a smoky room during a fire?",
-                    options: ["Run through the smoke", "Break a window", "Stay low to the ground", "Yell for help"],
-                    answer: 2
+                    question: "All fires produce the same type of smoke.",
+                    answer: false
                 },
                 {
-                    question: "What is the leading cause of fire-related deaths?",
-                    options: ["Burns", "Smoke inhalation", "Building collapse", "Panic"],
-                    answer: 1
+                    question: "Having a fire escape plan is unnecessary if you have smoke alarms.",
+                    answer: false
                 },
                 {
-                    question: "How many ways out should you have from every room in your home?",
-                    options: ["One", "Two", "Three", "Four"],
-                    answer: 1
+                    question: "Smoke inhalation is the leading cause of fire-related deaths.",
+                    answer: true
+                },
+                {
+                    question: "Space heaters should be kept at least 3 feet from flammable materials.",
+                    answer: true
+                },
+                {
+                    question: "Electrical fires can be put out with water.",
+                    answer: false
+                },
+                {
+                    question: "Fire drills are only necessary in schools and workplaces.",
+                    answer: false
+                },
+                {
+                    question: "You should never re-enter a burning building for any reason.",
+                    answer: true
+                },
+                {
+                    question: "Smoke alarms should be replaced every 10 years.",
+                    answer: true
+                },
+                {
+                    question: "Fire spreads faster in oxygen-rich environments.",
+                    answer: true
+                },
+                {
+                    question: "Using multiple extension cords is a safe electrical practice.",
+                    answer: false
+                },
+                {
+                    question: "Candles are a leading cause of home fires.",
+                    answer: true
+                },
+                {
+                    question: "Fire blankets are effective for putting out small fires.",
+                    answer: true
+                },
+                {
+                    question: "All homes should have at least one fire extinguisher.",
+                    answer: true
                 }
-                // 10 more questions would be added here to make 20 total
             ],
             earthquake: [
                 {
-                    question: "What should you do during an earthquake if you're indoors?",
-                    options: ["Run outside", "Stand in a doorway", "Get under a sturdy table", "Go to the basement"],
-                    answer: 2
+                    question: "Earthquakes can occur anywhere in the world.",
+                    answer: true
                 },
                 {
-                    question: "What is the name of the scale used to measure earthquakes?",
-                    options: ["Beaufort scale", "Richter scale", "Fujita scale", "Saffir-Simpson scale"],
-                    answer: 1
+                    question: "The Richter scale measures earthquake intensity.",
+                    answer: true
                 },
                 {
-                    question: "Where is the safest place to be during an earthquake?",
-                    options: ["In a car", "In a open field", "Next to a window", "In a elevator"],
-                    answer: 1
+                    question: "During an earthquake, you should stand in a doorway.",
+                    answer: false
                 },
                 {
-                    question: "What is the point on the Earth's surface directly above an earthquake called?",
-                    options: ["Focus", "Epicenter", "Hypocenter", "Origin point"],
-                    answer: 1
+                    question: "Drop, cover, and hold on is the recommended action during earthquakes.",
+                    answer: true
                 },
                 {
-                    question: "Which of these countries experiences the most earthquakes?",
-                    options: ["Australia", "Japan", "Brazil", "Egypt"],
-                    answer: 1
+                    question: "All earthquakes are followed by aftershocks.",
+                    answer: false
                 },
                 {
-                    question: "What should you avoid during an earthquake?",
-                    options: ["Doorways", "Windows", "Sturdy furniture", "Interior walls"],
-                    answer: 1
+                    question: "Earthquakes can trigger tsunamis.",
+                    answer: true
                 },
                 {
-                    question: "How can you prepare your home for an earthquake?",
-                    options: ["Secure heavy furniture", "Store breakable items on high shelves", "Ignore cracks in walls", "Use weak fasteners for cabinets"],
-                    answer: 0
+                    question: "The epicenter is where the earthquake originates deep underground.",
+                    answer: false
                 },
                 {
-                    question: "What is a tsunami?",
-                    options: ["A type of earthquake", "A series of ocean waves caused by earthquakes", "An aftershock", "A measuring device for earthquakes"],
-                    answer: 1
+                    question: "California has the most earthquakes in the United States.",
+                    answer: true
                 },
                 {
-                    question: "What should be in your earthquake emergency kit?",
-                    options: ["Water", "Non-perishable food", "Flashlight", "All of the above"],
-                    answer: 3
+                    question: "Earthquakes can be accurately predicted days in advance.",
+                    answer: false
                 },
                 {
-                    question: "How long do most earthquakes last?",
-                    options: ["A few seconds", "1-2 minutes", "5-10 minutes", "Over 30 minutes"],
-                    answer: 0
+                    question: "It's safe to use elevators immediately after an earthquake.",
+                    answer: false
+                },
+                {
+                    question: "Securing heavy furniture can reduce earthquake injuries.",
+                    answer: true
+                },
+                {
+                    question: "Small earthquakes prevent larger ones from occurring.",
+                    answer: false
+                },
+                {
+                    question: "Earthquakes only last for a few seconds.",
+                    answer: false
+                },
+                {
+                    question: "The Ring of Fire is an area with frequent earthquakes and volcanoes.",
+                    answer: true
+                },
+                {
+                    question: "You should run outside during an earthquake.",
+                    answer: false
+                },
+                {
+                    question: "Earthquakes can occur in the middle of tectonic plates.",
+                    answer: true
+                },
+                {
+                    question: "All buildings collapse during major earthquakes.",
+                    answer: false
+                },
+                {
+                    question: "Tsunami warnings should be taken seriously after coastal earthquakes.",
+                    answer: true
+                },
+                {
+                    question: "Earthquake preparedness kits should include water and non-perishable food.",
+                    answer: true
+                },
+                {
+                    question: "The magnitude of an earthquake determines its destructive power.",
+                    answer: true
                 }
-                // 10 more questions would be added here to make 20 total
             ]
         };
 
@@ -609,7 +694,7 @@
         // Start quiz for a specific disaster
         function startQuiz(disaster) {
             currentQuiz = disaster;
-            // Select 5 random questions from the pool
+            // Select 5 random questions from the pool of 20
             currentQuestions = getRandomQuestions(quizData[disaster], 5);
             currentQuestionIndex = 0;
             userAnswers = new Array(currentQuestions.length).fill(null);
@@ -636,16 +721,24 @@
             const optionsContainer = document.getElementById('options');
             optionsContainer.innerHTML = '';
             
-            question.options.forEach((option, index) => {
-                const optionElement = document.createElement('div');
-                optionElement.className = 'option';
-                if (userAnswers[currentQuestionIndex] === index) {
-                    optionElement.classList.add('selected');
-                }
-                optionElement.textContent = option;
-                optionElement.onclick = () => selectOption(optionElement, index);
-                optionsContainer.appendChild(optionElement);
-            });
+            // Create True and False options
+            const trueOption = document.createElement('div');
+            trueOption.className = 'option';
+            if (userAnswers[currentQuestionIndex] === true) {
+                trueOption.classList.add('selected');
+            }
+            trueOption.textContent = 'True';
+            trueOption.onclick = () => selectOption(trueOption, true);
+            optionsContainer.appendChild(trueOption);
+            
+            const falseOption = document.createElement('div');
+            falseOption.className = 'option';
+            if (userAnswers[currentQuestionIndex] === false) {
+                falseOption.classList.add('selected');
+            }
+            falseOption.textContent = 'False';
+            falseOption.onclick = () => selectOption(falseOption, false);
+            optionsContainer.appendChild(falseOption);
             
             // Update progress bar
             const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
@@ -657,7 +750,7 @@
         }
 
         // Select an option
-        function selectOption(element, index) {
+        function selectOption(element, value) {
             // Remove selected class from all options
             const options = document.querySelectorAll('.option');
             options.forEach(opt => {
@@ -668,7 +761,7 @@
             element.classList.add('selected');
             
             // Save user's answer
-            userAnswers[currentQuestionIndex] = index;
+            userAnswers[currentQuestionIndex] = value;
         }
 
         // Navigate to next question
