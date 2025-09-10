@@ -61,7 +61,7 @@ model = genai.GenerativeModel(
 
 @bp.route('/')
 def home():
-    return render_template('homepage.html')
+    return render_template('index.html')
 
 @bp.route('/about')
 def about():
